@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@source "./index.html";
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --color-ink: #18283b;
+  --color-muted: #586b7d;
+  --color-accent: #176a77;
+  --color-accent-dark: #10525d;
+  --color-accent-soft: #e7f3f1;
+  --color-paper: #f5f7f8;
+  --color-line: #dce5eb;
+  --color-danger: #ad3947;
+  --color-danger-soft: #fff0f1;
+  --color-good: #206e53;
+  --color-good-soft: #edf8f2;
+}
+@layer base {
+  [hidden] { display: none !important; }
+}
