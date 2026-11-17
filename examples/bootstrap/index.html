@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Organizer — учебное веб-приложение для управления задачами и проектами." />
+    <title>Organizer — Bootstrap</title>
+    <!-- Bootstrap 5.3.8: фиксированная версия и SRI (официальные ссылки). -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+    <link rel="stylesheet" href="bootstrap-overrides.css" />
+  </head>
+  <body>
+    <!-- Bootstrap-версия для сравнения с основным style.css. -->
+    <a href="#appMain" class="visually-hidden-focusable position-absolute top-0 start-0 z-3 bg-white p-3 rounded shadow">Перейти к основному содержимому</a>
+    <p class="alert alert-success my-2 mx-3" id="appStatus" role="status" aria-live="polite"></p>
+    <p class="alert alert-danger my-2 mx-3" id="appError" role="alert" hidden></p>
+    <!-- ============================================================
+         ЧАСТЬ 1. ВХОД И РЕГИСТРАЦИЯ
+         Это экраны ДО входа пользователя в приложение.
+         Сейчас они скрыты. Позже JavaScript будет показывать нужный.
+         ============================================================ -->
+
+    <!-- ЭКРАН 1. Вход в учётную запись -->
+    <section class="container bg-white border rounded-4 shadow-sm p-4 my-5 bootstrap-auth" id="loginScreen" aria-labelledby="loginTitle" hidden>
+      <h1 class="h2 fw-bold mb-4" id="loginTitle">Вход в Organizer</h1>
+      <form class="d-grid gap-3" id="loginForm">
+        <label class="form-label fw-semibold small" for="loginEmail">Электронная почта</label>
+        <input class="form-control" id="loginEmail" name="email" type="email" autocomplete="email" required />
+
+        <label class="form-label fw-semibold small" for="loginPassword">Пароль</label>
+        <input class="form-control" id="loginPassword" name="password" type="password" autocomplete="current-password" required />
+
+        <button class="btn btn-primary" type="submit">Войти</button>
+        <!-- ПЕРЕХОД: открыть экран регистрации registerScreen -->
+        <button class="btn btn-outline-primary" type="button" data-screen-target="registerScreen">Зарегистрироваться</button>
+      </form>
+    </section>
+    <!-- КОНЕЦ ЭКРАНА 1 -->
+
+    <!-- ЭКРАН 2. Регистрация нового пользователя -->
+    <section class="container bg-white border rounded-4 shadow-sm p-4 my-5 bootstrap-auth" id="registerScreen" aria-labelledby="registerTitle" hidden>
+      <h1 class="h2 fw-bold mb-4" id="registerTitle">Регистрация</h1>
+      <form class="d-grid gap-3" id="registerForm">
+        <label class="form-label fw-semibold small" for="registerName">Имя</label>
+        <input class="form-control" id="registerName" name="name" type="text" autocomplete="name" required />
+
+        <label class="form-label fw-semibold small" for="registerEmail">Электронная почта</label>
+        <input class="form-control" id="registerEmail" name="email" type="email" autocomplete="email" required />
+
+        <label class="form-label fw-semibold small" for="registerPassword">Пароль</label>
+        <input class="form-control" id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" required />
+
+        <button class="btn btn-primary" type="submit">Создать учётную запись</button>
+        <!-- ПЕРЕХОД: обратно на экран входа loginScreen -->
+        <button class="btn btn-outline-primary" type="button" data-screen-target="loginScreen">У меня уже есть учётная запись</button>
+      </form>
+    </section>
+    <!-- КОНЕЦ ЭКРАНА 2 -->
+
+    <!-- ============================================================
+         ЧАСТЬ 2. ОБЩАЯ ОБОЛОЧКА ПРИЛОЖЕНИЯ
+         Эта область сохраняется при переходах между экранами внутри SPA.
+         В учебном прототипе она показана сразу, без настоящего входа.
+         После реализации авторизации JavaScript будет её скрывать
+         от неавторизованных пользователей.
+         ============================================================ -->
+    <div class="d-flex flex-column min-vh-100" id="appShell">
+      <!-- ОБЩАЯ ВЕРХНЯЯ ПАНЕЛЬ. Это не отдельный экран. -->
+      <header class="navbar bg-white border-bottom px-3 px-lg-4 py-3 shadow-sm d-flex flex-wrap justify-content-between gap-3" id="appHeader">
+        <h1 class="navbar-brand fs-3 fw-bold m-0">Organizer</h1>
+        <nav class="d-flex flex-wrap gap-2 align-items-center" aria-label="Верхняя навигация">
+          <!-- ПЕРЕХОД: экран уведомлений notificationsScreen -->
+          <button class="btn btn-outline-primary" type="button" data-screen-target="notificationsScreen">Уведомления</button>
+          <!-- ПЕРЕХОД: настройки пользователя settingsScreen -->
+          <button class="btn btn-outline-primary" type="button" data-screen-target="settingsScreen">Мой профиль</button>
+          <!-- ДЕЙСТВИЕ: выход из учётной записи; реализуем позднее -->
+          <button class="btn btn-light" type="button" id="logoutButton">Выйти</button>
+        </nav>
+      </header>
+
+      <!-- КОНТЕЙНЕР ДВУХ ОБЛАСТЕЙ: БОКОВОГО МЕНЮ И ОСНОВНОГО СОДЕРЖИМОГО -->
+      <div class="bootstrap-shell flex-grow-1" id="appLayout">
+        <!-- ОБЩЕЕ БОКОВОЕ МЕНЮ. Это не отдельный экран. -->
+        <aside class="bootstrap-sidebar bg-white border-end" id="sidebar">
+          <nav class="nav nav-pills flex-md-column flex-nowrap gap-2 p-3 bootstrap-nav" aria-label="Разделы Organizer">
+            <!-- Каждый data-screen-target содержит id нужного экрана.
+                 Позже JavaScript прочитает этот атрибут и выполнит переход. -->
+            <button class="nav-link text-start text-nowrap active" type="button" aria-current="page" data-screen-target="tasksScreen">Задачи</button>
+            <button class="nav-link text-start text-nowrap" type="button" data-screen-target="projectsScreen">Проекты</button>
+            <button class="nav-link text-start text-nowrap" type="button" data-screen-target="teamScreen">Команда</button>
+            <button class="nav-link text-start text-nowrap" type="button" data-screen-target="calendarScreen">Календарь</button>
+            <button class="nav-link text-start text-nowrap" type="button" data-screen-target="settingsScreen">Настройки</button>
+          </nav>
+        </aside>
+
+        <!-- ОСНОВНАЯ ОБЛАСТЬ. В ней расположены экраны приложения.
+             В каждый момент обычно виден один основной экран. -->
+        <main class="bootstrap-main p-3 p-lg-4" id="appMain" tabindex="-1">
+          <!-- ======================================================
+               ЭКРАН 3. МОИ ЗАДАЧИ — стартовый экран после входа
+               Он единственный без hidden в этой группе.
+               ====================================================== -->
+          <section class="container-fluid px-0" id="tasksScreen" aria-labelledby="tasksTitle">
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+              <h2 id="tasksTitle">Мои задачи</h2>
+              <!-- ОКНО: форма создания задачи taskDialog -->
+              <button class="btn btn-primary" type="button" data-dialog-target="taskDialog" data-bs-toggle="modal" data-bs-target="#taskDialog">Добавить задачу</button>
+            </header>
+
+            <!-- ПАНЕЛЬ ПОИСКА И ФИЛЬТРАЦИИ. Это часть экрана задач. -->
+            <form class="row g-3 bg-white border rounded-3 p-3 mb-4 align-items-end" id="taskFiltersForm" role="search" aria-label="Поиск и фильтрация задач">
+              <div class="col-12 col-md-4 col-xl">
+                <label class="form-label fw-semibold small" for="taskSearch">Поиск задач</label>
+                <input class="form-control" id="taskSearch" name="query" type="search" placeholder="Название задачи" />
+              </div>
+
+              <div class="col-12 col-md-4 col-xl">
+                <label class="form-label fw-semibold small" for="taskStatusFilter">Статус</label>
+                <select class="form-select" id="taskStatusFilter" name="status">
+                  <option value="">Все статусы</option>
+                  <option value="planned">Запланирована</option>
+                  <option value="progress">В работе</option>
+                  <option value="done">Завершена</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-4 col-xl">
+                <label class="form-label fw-semibold small" for="taskPriorityFilter">Приоритет</label>
+                <select class="form-select" id="taskPriorityFilter" name="priority">
+                  <option value="">Любой приоритет</option>
+                  <option value="low">Низкий</option>
+                  <option value="medium">Средний</option>
+                  <option value="high">Высокий</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-xl-auto">
+                <button class="btn btn-light" type="reset">Сбросить фильтры</button>
+              </div>
+            </form>
+
+            <!-- СПИСОК ЗАДАЧ. Каждая задача — отдельный article. -->
+            <div class="d-grid gap-3" id="tasksList">
+              <!-- КАРТОЧКА ЗАДАЧИ 1 -->
+              <article class="card shadow-sm border-start border-4 bootstrap-task-card" id="taskExample1" data-task-id="example-task-1" aria-labelledby="taskExample1Title">
+                <header class="card-header bg-white border-0 pt-3 px-3 pb-0">
+                  <h3 class="h5 card-title mb-0" id="taskExample1Title">Подготовить план проекта</h3>
+                </header>
+                <p class="card-text text-secondary px-3 pt-2">Составить первоначальный план разработки приложения.</p>
+                <dl class="bootstrap-task-meta px-3 mb-3">
+                  <dt>Статус</dt><dd>В работе</dd>
+                  <dt>Приоритет</dt><dd>Высокий</dd>
+                  <dt>Срок</dt><dd><time datetime="2026-11-25">25 ноября 2026</time></dd>
+                  <dt>Исполнитель</dt><dd>Иван Петров</dd>
+                  <dt>Проект</dt><dd>Organizer</dd>
+                </dl>
+                <footer class="card-footer bg-white d-flex flex-wrap gap-2 p-3">
+                  <!-- ОКНО: тот же taskDialog, но в режиме редактирования -->
+                  <button class="btn btn-outline-primary btn-sm" type="button" data-dialog-target="taskDialog" data-task-id="example-task-1" aria-label="Редактировать задачу «Подготовить план проекта»" data-bs-toggle="modal" data-bs-target="#taskDialog">Редактировать</button>
+                  <button class="btn btn-outline-danger btn-sm" type="button" data-action="delete-task" data-task-id="example-task-1" aria-label="Удалить задачу «Подготовить план проекта»">Удалить</button>
+                </footer>
+              </article>
+              <!-- КОНЕЦ КАРТОЧКИ 1 -->
+
+              <!-- КАРТОЧКА ЗАДАЧИ 2 -->
+              <article class="card shadow-sm border-start border-4 bootstrap-task-card" id="taskExample2" data-task-id="example-task-2" aria-labelledby="taskExample2Title">
+                <header class="card-header bg-white border-0 pt-3 px-3 pb-0"><h3 class="h5 card-title mb-0" id="taskExample2Title">Создать HTML-разметку</h3></header>
+                <p class="card-text text-secondary px-3 pt-2">Разработать структуру главной страницы.</p>
+                <dl class="bootstrap-task-meta px-3 mb-3">
+                  <dt>Статус</dt><dd>Запланирована</dd>
+                  <dt>Приоритет</dt><dd>Средний</dd>
+                  <dt>Срок</dt><dd><time datetime="2026-11-30">30 ноября 2026</time></dd>
+                  <dt>Исполнитель</dt><dd>Иван Петров</dd>
+                  <dt>Проект</dt><dd>Organizer</dd>
+                </dl>
+                <footer class="card-footer bg-white d-flex flex-wrap gap-2 p-3">
+                  <button class="btn btn-outline-primary btn-sm" type="button" data-dialog-target="taskDialog" data-task-id="example-task-2" aria-label="Редактировать задачу «Создать HTML-разметку»" data-bs-toggle="modal" data-bs-target="#taskDialog">Редактировать</button>
+                  <button class="btn btn-outline-danger btn-sm" type="button" data-action="delete-task" data-task-id="example-task-2" aria-label="Удалить задачу «Создать HTML-разметку»">Удалить</button>
+                </footer>
+              </article>
+              <!-- КОНЕЦ КАРТОЧКИ 2 -->
+            </div>
+            <p class="alert alert-light border text-secondary text-center py-4" id="tasksEmptyState" hidden>Задач по выбранным условиям не найдено.</p>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 3 -->
+
+          <!-- ======================================================
+               ЭКРАН 4. ПРОЕКТЫ — список проектов
+               ====================================================== -->
+          <section class="container-fluid px-0" id="projectsScreen" aria-labelledby="projectsTitle" hidden>
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+              <h2 id="projectsTitle">Проекты</h2>
+              <!-- ОКНО: форма создания проекта projectDialog -->
+              <button class="btn btn-primary" type="button" data-dialog-target="projectDialog" data-bs-toggle="modal" data-bs-target="#projectDialog">Создать проект</button>
+            </header>
+            <div class="row row-cols-1 row-cols-lg-2 row-cols-xxl-3 g-3" id="projectsList" aria-label="Список проектов">
+              <div class="col"><article class="card shadow-sm h-100" id="projectExample1" data-project-id="example-project-1" aria-labelledby="projectExampleTitle">
+                <div class="card-body"><h3 class="card-title h5" id="projectExampleTitle">Organizer</h3>
+                <p class="card-text text-secondary">Разработка менеджера задач и проектов.</p>
+                <!-- ПЕРЕХОД: подробный экран одного проекта projectDetailsScreen -->
+                <button class="btn btn-outline-primary" type="button" data-screen-target="projectDetailsScreen" data-project-id="example-project-1" aria-label="Открыть проект Organizer">Открыть проект</button>
+              </div>
+              </article></div>
+            </div>
+            <p class="alert alert-light border text-secondary text-center py-4" id="projectsEmptyState" hidden>Проектов пока нет.</p>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 4 -->
+
+          <!-- ======================================================
+               ЭКРАН 5. ПОДРОБНОСТИ ПРОЕКТА — внутренний экран раздела
+               ====================================================== -->
+          <section class="container-fluid px-0" id="projectDetailsScreen" aria-labelledby="projectDetailsTitle" hidden>
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+              <h2 id="projectDetailsTitle">Проект Organizer</h2>
+              <!-- ПЕРЕХОД: обратно к списку проектов -->
+              <button class="btn btn-outline-primary" type="button" data-screen-target="projectsScreen">Ко всем проектам</button>
+            </header>
+            <p>Разработка приложения для управления задачами и командой.</p>
+            <h3>Участники проекта</h3>
+            <ul class="list-group" id="projectMembersList"><li class="list-group-item">Иван Петров</li></ul>
+            <h3>Задачи проекта</h3>
+            <ul class="list-group" id="projectTasksList"><li class="list-group-item">Подготовить план проекта</li><li class="list-group-item">Создать HTML-разметку</li></ul>
+            <!-- Позже пункты задач станут ссылками на подробности задачи. -->
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 5 -->
+
+          <!-- ======================================================
+               ЭКРАН 6. КОМАНДА — участники и роли
+               ====================================================== -->
+          <section class="container-fluid px-0" id="teamScreen" aria-labelledby="teamTitle" hidden>
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+              <h2 id="teamTitle">Команда</h2>
+              <!-- ОКНО: форма приглашения inviteDialog -->
+              <button class="btn btn-primary" type="button" data-dialog-target="inviteDialog" data-bs-toggle="modal" data-bs-target="#inviteDialog">Пригласить участника</button>
+            </header>
+            <ul class="list-group" id="teamList">
+              <li class="list-group-item d-flex flex-wrap align-items-center justify-content-between gap-3" data-user-id="example-user-1">
+                Иван Петров — участник команды
+                <!-- ПЕРЕХОД: профиль выбранного участника memberScreen -->
+                <button class="btn btn-outline-primary" type="button" data-screen-target="memberScreen" data-user-id="example-user-1" aria-label="Профиль участника Иван Петров">Профиль</button>
+              </li>
+            </ul>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 6 -->
+
+          <!-- ======================================================
+               ЭКРАН 7. ПРОФИЛЬ УЧАСТНИКА — внутренний экран команды
+               ====================================================== -->
+          <section class="container-fluid px-0" id="memberScreen" aria-labelledby="memberTitle" hidden>
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+              <h2 id="memberTitle">Участник команды: Иван Петров</h2>
+              <button class="btn btn-outline-primary" type="button" data-screen-target="teamScreen">К команде</button>
+            </header>
+            <dl class="bootstrap-task-meta">
+              <dt>Роль</dt><dd>Участник</dd>
+              <dt>Назначенные задачи</dt><dd>2</dd>
+            </dl>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 7 -->
+
+          <!-- ======================================================
+               ЭКРАН 8. КАЛЕНДАРЬ — задачи по датам
+               На данном этапе это семантическая заготовка, а не сетка календаря.
+               ====================================================== -->
+          <section class="container-fluid px-0" id="calendarScreen" aria-labelledby="calendarTitle" hidden>
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4"><h2 id="calendarTitle">Календарь задач</h2></header>
+            <label for="calendarDate">Выберите дату</label>
+            <input class="form-control" id="calendarDate" type="date" name="calendarDate" />
+            <h3>Задачи выбранного дня</h3>
+            <ul class="list-group" id="calendarTasks"><li class="list-group-item">Здесь появятся задачи на выбранную дату.</li></ul>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 8 -->
+
+          <!-- ======================================================
+               ЭКРАН 9. НАСТРОЙКИ — параметры пользователя
+               ====================================================== -->
+          <section class="container-fluid px-0" id="settingsScreen" aria-labelledby="settingsTitle" hidden>
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4"><h2 id="settingsTitle">Настройки</h2></header>
+            <form class="bootstrap-settings-form d-grid gap-3" id="profileForm">
+              <fieldset class="border rounded-3 p-3 d-grid gap-3">
+                <legend class="float-none w-auto px-2 fs-6 fw-semibold">Профиль</legend>
+                <label class="form-label fw-semibold small" for="profileName">Имя</label>
+                <input class="form-control" id="profileName" name="name" type="text" autocomplete="name" required />
+                <label class="form-label fw-semibold small" for="profileEmail">Электронная почта</label>
+                <input class="form-control" id="profileEmail" name="email" type="email" autocomplete="email" required />
+              </fieldset>
+              <button class="btn btn-primary" type="submit">Сохранить профиль</button>
+            </form>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 9 -->
+
+          <!-- ======================================================
+               ЭКРАН 10. УВЕДОМЛЕНИЯ — открывается из верхней панели
+               ====================================================== -->
+          <section class="container-fluid px-0" id="notificationsScreen" aria-labelledby="notificationsTitle" hidden>
+            <header class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4"><h2 id="notificationsTitle">Уведомления</h2></header>
+            <ul class="list-group" id="notificationsList">
+              <li class="list-group-item">Новых уведомлений пока нет.</li>
+            </ul>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 10 -->
+        </main>
+      </div>
+
+      <!-- ОБЩИЙ ПОДВАЛ. Не является самостоятельным экраном. -->
+      <footer class="bg-white border-top py-3 px-4 text-center small text-secondary mt-auto" id="appFooter"><p>Organizer — учебный проект.</p></footer>
+    </div>
+    <!-- КОНЕЦ ОБЩЕЙ ОБОЛОЧКИ -->
+
+    <!-- ============================================================
+         ЧАСТЬ 3. МОДАЛЬНЫЕ ОКНА
+         dialog — НЕ основной экран: он открывается поверх текущего.
+         По умолчанию все dialog закрыты. Позже JS вызовет showModal().
+         Кнопки закрытия тоже будут подключены через JS.
+         ============================================================ -->
+
+    <!-- ОКНО A. Создание / редактирование задачи -->
+    <div class="modal fade" tabindex="-1" id="taskDialog" aria-labelledby="taskDialogTitle" aria-describedby="taskDialogHelp">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+      <h2 class="modal-title fs-5 fw-bold" id="taskDialogTitle">Задача</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div><div class="modal-body">
+      <p class="text-secondary small mb-3" id="taskDialogHelp">Заполните сведения о задаче. Поля с пометкой «обязательно» необходимы для сохранения.</p>
+      <form class="d-grid gap-3" id="taskForm">
+        <input id="taskId" name="id" type="hidden" value="" />
+        <label class="form-label fw-semibold small" for="taskTitle">Название задачи (обязательно)</label>
+        <input class="form-control" id="taskTitle" name="title" type="text" required />
+
+        <label class="form-label fw-semibold small" for="taskDescription">Описание</label>
+        <textarea class="form-control" id="taskDescription" name="description" rows="4"></textarea>
+
+        <!-- Состав статусов ещё требуется утвердить. -->
+        <label class="form-label fw-semibold small" for="taskStatus">Статус</label>
+        <select class="form-select" id="taskStatus" name="status" required>
+          <option value="planned">Запланирована</option>
+          <option value="progress">В работе</option>
+          <option value="done">Завершена</option>
+        </select>
+
+        <!-- Состав приоритетов ещё требуется утвердить. -->
+        <label class="form-label fw-semibold small" for="taskPriority">Приоритет</label>
+        <select class="form-select" id="taskPriority" name="priority" required>
+          <option value="low">Низкий</option>
+          <option value="medium">Средний</option>
+          <option value="high">Высокий</option>
+        </select>
+
+        <label class="form-label fw-semibold small" for="taskDueDate">Срок выполнения</label>
+        <input class="form-control" id="taskDueDate" name="dueDate" type="date" />
+
+        <!-- Допустимость задач без проекта требует решения. -->
+        <label class="form-label fw-semibold small" for="taskProject">Проект</label>
+        <select class="form-select" id="taskProject" name="projectId">
+          <option value="">Без проекта</option>
+          <option value="organizer">Organizer</option>
+        </select>
+
+        <!-- Возможность оставить задачу без исполнителя требует решения. -->
+        <label class="form-label fw-semibold small" for="taskAssignee">Исполнитель</label>
+        <select class="form-select" id="taskAssignee" name="assigneeId">
+          <option value="">Не назначен</option>
+          <option value="ivan">Иван Петров</option>
+        </select>
+
+        <!-- Сохранение и закрытие подключим через JavaScript. -->
+        <button class="btn btn-primary" type="submit">Сохранить задачу</button>
+        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal" data-close-dialog>Отмена</button>
+      </form>
+    </div></div></div></div>
+    <!-- КОНЕЦ ОКНА A -->
+
+    <!-- ОКНО B. Создание проекта -->
+    <div class="modal fade" tabindex="-1" id="projectDialog" aria-labelledby="projectDialogTitle">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+      <h2 class="modal-title fs-5 fw-bold" id="projectDialogTitle">Новый проект</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div><div class="modal-body">
+      <form class="d-grid gap-3" id="projectForm">
+        <label class="form-label fw-semibold small" for="projectName">Название проекта (обязательно)</label>
+        <input class="form-control" id="projectName" name="name" type="text" required />
+        <label class="form-label fw-semibold small" for="projectDescription">Описание проекта</label>
+        <textarea class="form-control" id="projectDescription" name="description" rows="4"></textarea>
+        <button class="btn btn-primary" type="submit">Сохранить проект</button>
+        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal" data-close-dialog>Отмена</button>
+      </form>
+    </div></div></div></div>
+    <!-- КОНЕЦ ОКНА B -->
+
+    <!-- ОКНО C. Приглашение участника -->
+    <div class="modal fade" tabindex="-1" id="inviteDialog" aria-labelledby="inviteDialogTitle">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+      <h2 class="modal-title fs-5 fw-bold" id="inviteDialogTitle">Пригласить участника</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div><div class="modal-body">
+      <form class="d-grid gap-3" id="inviteForm">
+        <label class="form-label fw-semibold small" for="inviteEmail">Электронная почта участника (обязательно)</label>
+        <input class="form-control" id="inviteEmail" name="email" type="email" required />
+        <!-- Полномочия ролей уточним перед реализацией сервера. -->
+        <label class="form-label fw-semibold small" for="inviteRole">Роль</label>
+        <select class="form-select" id="inviteRole" name="role">
+          <option value="member">Участник</option>
+          <option value="admin">Администратор</option>
+        </select>
+        <button class="btn btn-primary" type="submit">Отправить приглашение</button>
+        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal" data-close-dialog>Отмена</button>
+      </form>
+    </div></div></div></div>
+    <!-- КОНЕЦ ОКНА C -->
+
+    <!--
+       КОНТРАКТ ДЛЯ СЛЕДУЮЩИХ ЭТАПОВ
+       CSS оформляет существующие семантические блоки и состояния фокуса.
+       JS использует id и data-* для переходов, форм и операций с задачами.
+       Демонстрационные карточки будут заменены реальными данными.
+       Сервер проверяет права и хранит данные, HTML этого не делает.
+       Роли, статусы и задачи без проекта ещё требуют утверждения.
+    -->
+      <!-- Только компоненты Bootstrap (modal); логика Organizer не подключена. -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  </body>
+</html>
