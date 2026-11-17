@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Organizer — учебное веб-приложение для управления задачами и проектами." />
     <title>Organizer — задачи и проекты</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <!-- Ссылка для клавиатурной навигации, стиль добавим в CSS. -->
     <a href="#appMain" class="skip-link">Перейти к основному содержимому</a>
-    <p id="appStatus" role="status" aria-live="polite"></p>
-    <p id="appError" role="alert" hidden></p>
+    <p class="status-message" id="appStatus" role="status" aria-live="polite"></p>
+    <p class="status-message status-message--error" id="appError" role="alert" hidden></p>
     <!-- ============================================================
          ЧАСТЬ 1. ВХОД И РЕГИСТРАЦИЯ
          Это экраны ДО входа пользователя в приложение.
@@ -18,38 +19,38 @@
          ============================================================ -->
 
     <!-- ЭКРАН 1. Вход в учётную запись -->
-    <section id="loginScreen" aria-labelledby="loginTitle" hidden>
-      <h1 id="loginTitle">Вход в Organizer</h1>
-      <form id="loginForm">
-        <label for="loginEmail">Электронная почта</label>
-        <input id="loginEmail" name="email" type="email" autocomplete="email" required />
+    <section class="auth-screen" id="loginScreen" aria-labelledby="loginTitle" hidden>
+      <h1 class="auth-screen__title" id="loginTitle">Вход в Organizer</h1>
+      <form class="auth-screen__form" id="loginForm">
+        <label class="form-field__label" for="loginEmail">Электронная почта</label>
+        <input class="form-field__control" id="loginEmail" name="email" type="email" autocomplete="email" required />
 
-        <label for="loginPassword">Пароль</label>
-        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required />
+        <label class="form-field__label" for="loginPassword">Пароль</label>
+        <input class="form-field__control" id="loginPassword" name="password" type="password" autocomplete="current-password" required />
 
-        <button type="submit">Войти</button>
+        <button class="button" type="submit">Войти</button>
         <!-- ПЕРЕХОД: открыть экран регистрации registerScreen -->
-        <button type="button" data-screen-target="registerScreen">Зарегистрироваться</button>
+        <button class="button button--secondary" type="button" data-screen-target="registerScreen">Зарегистрироваться</button>
       </form>
     </section>
     <!-- КОНЕЦ ЭКРАНА 1 -->
 
     <!-- ЭКРАН 2. Регистрация нового пользователя -->
-    <section id="registerScreen" aria-labelledby="registerTitle" hidden>
-      <h1 id="registerTitle">Регистрация</h1>
-      <form id="registerForm">
-        <label for="registerName">Имя</label>
-        <input id="registerName" name="name" type="text" autocomplete="name" required />
+    <section class="auth-screen" id="registerScreen" aria-labelledby="registerTitle" hidden>
+      <h1 class="auth-screen__title" id="registerTitle">Регистрация</h1>
+      <form class="auth-screen__form" id="registerForm">
+        <label class="form-field__label" for="registerName">Имя</label>
+        <input class="form-field__control" id="registerName" name="name" type="text" autocomplete="name" required />
 
-        <label for="registerEmail">Электронная почта</label>
-        <input id="registerEmail" name="email" type="email" autocomplete="email" required />
+        <label class="form-field__label" for="registerEmail">Электронная почта</label>
+        <input class="form-field__control" id="registerEmail" name="email" type="email" autocomplete="email" required />
 
-        <label for="registerPassword">Пароль</label>
-        <input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" required />
+        <label class="form-field__label" for="registerPassword">Пароль</label>
+        <input class="form-field__control" id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" required />
 
-        <button type="submit">Создать учётную запись</button>
+        <button class="button" type="submit">Создать учётную запись</button>
         <!-- ПЕРЕХОД: обратно на экран входа loginScreen -->
-        <button type="button" data-screen-target="loginScreen">У меня уже есть учётная запись</button>
+        <button class="button button--secondary" type="button" data-screen-target="loginScreen">У меня уже есть учётная запись</button>
       </form>
     </section>
     <!-- КОНЕЦ ЭКРАНА 2 -->
@@ -61,152 +62,161 @@
          После реализации авторизации JavaScript будет её скрывать
          от неавторизованных пользователей.
          ============================================================ -->
-    <div id="appShell">
+    <div class="app-shell" id="appShell">
       <!-- ОБЩАЯ ВЕРХНЯЯ ПАНЕЛЬ. Это не отдельный экран. -->
-      <header id="appHeader">
-        <h1>Organizer</h1>
-        <nav aria-label="Верхняя навигация">
+      <header class="app-shell__header" id="appHeader">
+        <h1 class="app-shell__brand">Organizer</h1>
+        <nav class="app-shell__header-actions" aria-label="Верхняя навигация">
           <!-- ПЕРЕХОД: экран уведомлений notificationsScreen -->
-          <button type="button" data-screen-target="notificationsScreen">Уведомления</button>
+          <button class="button button--secondary" type="button" data-screen-target="notificationsScreen">Уведомления</button>
           <!-- ПЕРЕХОД: настройки пользователя settingsScreen -->
-          <button type="button" data-screen-target="settingsScreen">Мой профиль</button>
+          <button class="button button--secondary" type="button" data-screen-target="settingsScreen">Мой профиль</button>
           <!-- ДЕЙСТВИЕ: выход из учётной записи; реализуем позднее -->
-          <button type="button" id="logoutButton">Выйти</button>
+          <button class="button button--quiet" type="button" id="logoutButton">Выйти</button>
         </nav>
       </header>
 
       <!-- КОНТЕЙНЕР ДВУХ ОБЛАСТЕЙ: БОКОВОГО МЕНЮ И ОСНОВНОГО СОДЕРЖИМОГО -->
-      <div id="appLayout">
+      <div class="app-shell__layout" id="appLayout">
         <!-- ОБЩЕЕ БОКОВОЕ МЕНЮ. Это не отдельный экран. -->
-        <aside id="sidebar">
-          <nav aria-label="Разделы Organizer">
+        <aside class="app-shell__sidebar" id="sidebar">
+          <nav class="sidebar__nav" aria-label="Разделы Organizer">
             <!-- Каждый data-screen-target содержит id нужного экрана.
                  Позже JavaScript прочитает этот атрибут и выполнит переход. -->
-            <button type="button" data-screen-target="tasksScreen">Задачи</button>
-            <button type="button" data-screen-target="projectsScreen">Проекты</button>
-            <button type="button" data-screen-target="teamScreen">Команда</button>
-            <button type="button" data-screen-target="calendarScreen">Календарь</button>
-            <button type="button" data-screen-target="settingsScreen">Настройки</button>
+            <button class="sidebar__link" type="button" data-screen-target="tasksScreen">Задачи</button>
+            <button class="sidebar__link" type="button" data-screen-target="projectsScreen">Проекты</button>
+            <button class="sidebar__link" type="button" data-screen-target="teamScreen">Команда</button>
+            <button class="sidebar__link" type="button" data-screen-target="calendarScreen">Календарь</button>
+            <button class="sidebar__link" type="button" data-screen-target="settingsScreen">Настройки</button>
           </nav>
         </aside>
 
         <!-- ОСНОВНАЯ ОБЛАСТЬ. В ней расположены экраны приложения.
              В каждый момент обычно виден один основной экран. -->
-        <main id="appMain" tabindex="-1">
+        <main class="app-shell__main" id="appMain" tabindex="-1">
           <!-- ======================================================
                ЭКРАН 3. МОИ ЗАДАЧИ — стартовый экран после входа
                Он единственный без hidden в этой группе.
                ====================================================== -->
-          <section id="tasksScreen" aria-labelledby="tasksTitle">
-            <header>
+          <section class="screen" id="tasksScreen" aria-labelledby="tasksTitle">
+            <header class="screen__header">
               <h2 id="tasksTitle">Мои задачи</h2>
               <!-- ОКНО: форма создания задачи taskDialog -->
-              <button type="button" data-dialog-target="taskDialog">Добавить задачу</button>
+              <button class="button" type="button" data-dialog-target="taskDialog">Добавить задачу</button>
             </header>
 
             <!-- ПАНЕЛЬ ПОИСКА И ФИЛЬТРАЦИИ. Это часть экрана задач. -->
-            <form id="taskFiltersForm" role="search" aria-label="Поиск и фильтрация задач">
-              <label for="taskSearch">Поиск задач</label>
-              <input id="taskSearch" name="query" type="search" placeholder="Название задачи" />
+            <form class="task-filters" id="taskFiltersForm" role="search" aria-label="Поиск и фильтрация задач">
+              <div class="task-filters__field">
+                <label class="task-filters__label" for="taskSearch">Поиск задач</label>
+                <input class="task-filters__control" id="taskSearch" name="query" type="search" placeholder="Название задачи" />
+              </div>
 
-              <label for="taskStatusFilter">Статус</label>
-              <select id="taskStatusFilter" name="status">
-                <option value="">Все статусы</option>
-                <option value="planned">Запланирована</option>
-                <option value="progress">В работе</option>
-                <option value="done">Завершена</option>
-              </select>
+              <div class="task-filters__field">
+                <label class="task-filters__label" for="taskStatusFilter">Статус</label>
+                <select class="task-filters__control" id="taskStatusFilter" name="status">
+                  <option value="">Все статусы</option>
+                  <option value="planned">Запланирована</option>
+                  <option value="progress">В работе</option>
+                  <option value="done">Завершена</option>
+                </select>
+              </div>
 
-              <label for="taskPriorityFilter">Приоритет</label>
-              <select id="taskPriorityFilter" name="priority">
-                <option value="">Любой приоритет</option>
-                <option value="low">Низкий</option>
-                <option value="medium">Средний</option>
-                <option value="high">Высокий</option>
-              </select>
-              <button type="reset">Сбросить фильтры</button>
+              <div class="task-filters__field">
+                <label class="task-filters__label" for="taskPriorityFilter">Приоритет</label>
+                <select class="task-filters__control" id="taskPriorityFilter" name="priority">
+                  <option value="">Любой приоритет</option>
+                  <option value="low">Низкий</option>
+                  <option value="medium">Средний</option>
+                  <option value="high">Высокий</option>
+                </select>
+              </div>
+
+              <div class="task-filters__actions">
+                <button class="button button--quiet" type="reset">Сбросить фильтры</button>
+              </div>
             </form>
 
             <!-- СПИСОК ЗАДАЧ. Каждая задача — отдельный article. -->
-            <div id="tasksList">
+            <div class="task-list" id="tasksList">
               <!-- КАРТОЧКА ЗАДАЧИ 1 -->
-              <article id="taskExample1" data-task-id="example-task-1" aria-labelledby="taskExample1Title">
-                <header>
-                  <h3 id="taskExample1Title">Подготовить план проекта</h3>
+              <article class="task-card" id="taskExample1" data-task-id="example-task-1" aria-labelledby="taskExample1Title">
+                <header class="task-card__header">
+                  <h3 class="task-card__title" id="taskExample1Title">Подготовить план проекта</h3>
                 </header>
-                <p>Составить первоначальный план разработки приложения.</p>
-                <dl>
+                <p class="task-card__description">Составить первоначальный план разработки приложения.</p>
+                <dl class="task-card__meta">
                   <dt>Статус</dt><dd>В работе</dd>
                   <dt>Приоритет</dt><dd>Высокий</dd>
                   <dt>Срок</dt><dd><time datetime="2026-11-25">25 ноября 2026</time></dd>
                   <dt>Исполнитель</dt><dd>Иван Петров</dd>
                   <dt>Проект</dt><dd>Organizer</dd>
                 </dl>
-                <footer>
+                <footer class="task-card__actions">
                   <!-- ОКНО: тот же taskDialog, но в режиме редактирования -->
-                  <button type="button" data-dialog-target="taskDialog" data-task-id="example-task-1" aria-label="Редактировать задачу «Подготовить план проекта»">Редактировать</button>
-                  <button type="button" data-action="delete-task" data-task-id="example-task-1" aria-label="Удалить задачу «Подготовить план проекта»">Удалить</button>
+                  <button class="button button--secondary button--small" type="button" data-dialog-target="taskDialog" data-task-id="example-task-1" aria-label="Редактировать задачу «Подготовить план проекта»">Редактировать</button>
+                  <button class="button button--danger button--small" type="button" data-action="delete-task" data-task-id="example-task-1" aria-label="Удалить задачу «Подготовить план проекта»">Удалить</button>
                 </footer>
               </article>
               <!-- КОНЕЦ КАРТОЧКИ 1 -->
 
               <!-- КАРТОЧКА ЗАДАЧИ 2 -->
-              <article id="taskExample2" data-task-id="example-task-2" aria-labelledby="taskExample2Title">
-                <header><h3 id="taskExample2Title">Создать HTML-разметку</h3></header>
-                <p>Разработать структуру главной страницы.</p>
-                <dl>
+              <article class="task-card" id="taskExample2" data-task-id="example-task-2" aria-labelledby="taskExample2Title">
+                <header class="task-card__header"><h3 class="task-card__title" id="taskExample2Title">Создать HTML-разметку</h3></header>
+                <p class="task-card__description">Разработать структуру главной страницы.</p>
+                <dl class="task-card__meta">
                   <dt>Статус</dt><dd>Запланирована</dd>
                   <dt>Приоритет</dt><dd>Средний</dd>
                   <dt>Срок</dt><dd><time datetime="2026-11-30">30 ноября 2026</time></dd>
                   <dt>Исполнитель</dt><dd>Иван Петров</dd>
                   <dt>Проект</dt><dd>Organizer</dd>
                 </dl>
-                <footer>
-                  <button type="button" data-dialog-target="taskDialog" data-task-id="example-task-2" aria-label="Редактировать задачу «Создать HTML-разметку»">Редактировать</button>
-                  <button type="button" data-action="delete-task" data-task-id="example-task-2" aria-label="Удалить задачу «Создать HTML-разметку»">Удалить</button>
+                <footer class="task-card__actions">
+                  <button class="button button--secondary button--small" type="button" data-dialog-target="taskDialog" data-task-id="example-task-2" aria-label="Редактировать задачу «Создать HTML-разметку»">Редактировать</button>
+                  <button class="button button--danger button--small" type="button" data-action="delete-task" data-task-id="example-task-2" aria-label="Удалить задачу «Создать HTML-разметку»">Удалить</button>
                 </footer>
               </article>
               <!-- КОНЕЦ КАРТОЧКИ 2 -->
             </div>
-            <p id="tasksEmptyState" hidden>Задач по выбранным условиям не найдено.</p>
+            <p class="empty-state" id="tasksEmptyState" hidden>Задач по выбранным условиям не найдено.</p>
           </section>
           <!-- КОНЕЦ ЭКРАНА 3 -->
 
           <!-- ======================================================
                ЭКРАН 4. ПРОЕКТЫ — список проектов
                ====================================================== -->
-          <section id="projectsScreen" aria-labelledby="projectsTitle" hidden>
-            <header>
+          <section class="screen" id="projectsScreen" aria-labelledby="projectsTitle" hidden>
+            <header class="screen__header">
               <h2 id="projectsTitle">Проекты</h2>
               <!-- ОКНО: форма создания проекта projectDialog -->
-              <button type="button" data-dialog-target="projectDialog">Создать проект</button>
+              <button class="button" type="button" data-dialog-target="projectDialog">Создать проект</button>
             </header>
-            <div id="projectsList" aria-label="Список проектов">
-              <article id="projectExample1" data-project-id="example-project-1" aria-labelledby="projectExampleTitle">
-                <h3 id="projectExampleTitle">Organizer</h3>
-                <p>Разработка менеджера задач и проектов.</p>
+            <div class="project-list" id="projectsList" aria-label="Список проектов">
+              <article class="project-card" id="projectExample1" data-project-id="example-project-1" aria-labelledby="projectExampleTitle">
+                <h3 class="project-card__title" id="projectExampleTitle">Organizer</h3>
+                <p class="project-card__description">Разработка менеджера задач и проектов.</p>
                 <!-- ПЕРЕХОД: подробный экран одного проекта projectDetailsScreen -->
-                <button type="button" data-screen-target="projectDetailsScreen" data-project-id="example-project-1" aria-label="Открыть проект Organizer">Открыть проект</button>
+                <button class="button button--secondary" type="button" data-screen-target="projectDetailsScreen" data-project-id="example-project-1" aria-label="Открыть проект Organizer">Открыть проект</button>
               </article>
             </div>
-            <p id="projectsEmptyState" hidden>Проектов пока нет.</p>
+            <p class="empty-state" id="projectsEmptyState" hidden>Проектов пока нет.</p>
           </section>
           <!-- КОНЕЦ ЭКРАНА 4 -->
 
           <!-- ======================================================
                ЭКРАН 5. ПОДРОБНОСТИ ПРОЕКТА — внутренний экран раздела
                ====================================================== -->
-          <section id="projectDetailsScreen" aria-labelledby="projectDetailsTitle" hidden>
-            <header>
+          <section class="screen" id="projectDetailsScreen" aria-labelledby="projectDetailsTitle" hidden>
+            <header class="screen__header">
               <h2 id="projectDetailsTitle">Проект Organizer</h2>
               <!-- ПЕРЕХОД: обратно к списку проектов -->
-              <button type="button" data-screen-target="projectsScreen">Ко всем проектам</button>
+              <button class="button button--secondary" type="button" data-screen-target="projectsScreen">Ко всем проектам</button>
             </header>
             <p>Разработка приложения для управления задачами и командой.</p>
             <h3>Участники проекта</h3>
-            <ul id="projectMembersList"><li>Иван Петров</li></ul>
+            <ul class="detail-list" id="projectMembersList"><li>Иван Петров</li></ul>
             <h3>Задачи проекта</h3>
-            <ul id="projectTasksList"><li>Подготовить план проекта</li><li>Создать HTML-разметку</li></ul>
+            <ul class="detail-list" id="projectTasksList"><li>Подготовить план проекта</li><li>Создать HTML-разметку</li></ul>
             <!-- Позже пункты задач станут ссылками на подробности задачи. -->
           </section>
           <!-- КОНЕЦ ЭКРАНА 5 -->
@@ -214,17 +224,17 @@
           <!-- ======================================================
                ЭКРАН 6. КОМАНДА — участники и роли
                ====================================================== -->
-          <section id="teamScreen" aria-labelledby="teamTitle" hidden>
-            <header>
+          <section class="screen" id="teamScreen" aria-labelledby="teamTitle" hidden>
+            <header class="screen__header">
               <h2 id="teamTitle">Команда</h2>
               <!-- ОКНО: форма приглашения inviteDialog -->
-              <button type="button" data-dialog-target="inviteDialog">Пригласить участника</button>
+              <button class="button" type="button" data-dialog-target="inviteDialog">Пригласить участника</button>
             </header>
-            <ul id="teamList">
-              <li data-user-id="example-user-1">
+            <ul class="member-list" id="teamList">
+              <li class="member-list__item" data-user-id="example-user-1">
                 Иван Петров — участник команды
                 <!-- ПЕРЕХОД: профиль выбранного участника memberScreen -->
-                <button type="button" data-screen-target="memberScreen" data-user-id="example-user-1" aria-label="Профиль участника Иван Петров">Профиль</button>
+                <button class="button button--secondary" type="button" data-screen-target="memberScreen" data-user-id="example-user-1" aria-label="Профиль участника Иван Петров">Профиль</button>
               </li>
             </ul>
           </section>
@@ -233,12 +243,12 @@
           <!-- ======================================================
                ЭКРАН 7. ПРОФИЛЬ УЧАСТНИКА — внутренний экран команды
                ====================================================== -->
-          <section id="memberScreen" aria-labelledby="memberTitle" hidden>
-            <header>
+          <section class="screen" id="memberScreen" aria-labelledby="memberTitle" hidden>
+            <header class="screen__header">
               <h2 id="memberTitle">Участник команды: Иван Петров</h2>
-              <button type="button" data-screen-target="teamScreen">К команде</button>
+              <button class="button button--secondary" type="button" data-screen-target="teamScreen">К команде</button>
             </header>
-            <dl>
+            <dl class="detail-panel__meta">
               <dt>Роль</dt><dd>Участник</dd>
               <dt>Назначенные задачи</dt><dd>2</dd>
             </dl>
@@ -249,29 +259,29 @@
                ЭКРАН 8. КАЛЕНДАРЬ — задачи по датам
                На данном этапе это семантическая заготовка, а не сетка календаря.
                ====================================================== -->
-          <section id="calendarScreen" aria-labelledby="calendarTitle" hidden>
-            <header><h2 id="calendarTitle">Календарь задач</h2></header>
+          <section class="screen" id="calendarScreen" aria-labelledby="calendarTitle" hidden>
+            <header class="screen__header"><h2 id="calendarTitle">Календарь задач</h2></header>
             <label for="calendarDate">Выберите дату</label>
-            <input id="calendarDate" type="date" name="calendarDate" />
+            <input class="form-field__control" id="calendarDate" type="date" name="calendarDate" />
             <h3>Задачи выбранного дня</h3>
-            <ul id="calendarTasks"><li>Здесь появятся задачи на выбранную дату.</li></ul>
+            <ul class="detail-list" id="calendarTasks"><li>Здесь появятся задачи на выбранную дату.</li></ul>
           </section>
           <!-- КОНЕЦ ЭКРАНА 8 -->
 
           <!-- ======================================================
                ЭКРАН 9. НАСТРОЙКИ — параметры пользователя
                ====================================================== -->
-          <section id="settingsScreen" aria-labelledby="settingsTitle" hidden>
-            <header><h2 id="settingsTitle">Настройки</h2></header>
-            <form id="profileForm">
-              <fieldset>
-                <legend>Профиль</legend>
-                <label for="profileName">Имя</label>
-                <input id="profileName" name="name" type="text" autocomplete="name" required />
-                <label for="profileEmail">Электронная почта</label>
-                <input id="profileEmail" name="email" type="email" autocomplete="email" required />
+          <section class="screen" id="settingsScreen" aria-labelledby="settingsTitle" hidden>
+            <header class="screen__header"><h2 id="settingsTitle">Настройки</h2></header>
+            <form class="form-stack screen__form" id="profileForm">
+              <fieldset class="form-stack__fieldset">
+                <legend class="form-stack__legend">Профиль</legend>
+                <label class="form-field__label" for="profileName">Имя</label>
+                <input class="form-field__control" id="profileName" name="name" type="text" autocomplete="name" required />
+                <label class="form-field__label" for="profileEmail">Электронная почта</label>
+                <input class="form-field__control" id="profileEmail" name="email" type="email" autocomplete="email" required />
               </fieldset>
-              <button type="submit">Сохранить профиль</button>
+              <button class="button" type="submit">Сохранить профиль</button>
             </form>
           </section>
           <!-- КОНЕЦ ЭКРАНА 9 -->
@@ -279,9 +289,9 @@
           <!-- ======================================================
                ЭКРАН 10. УВЕДОМЛЕНИЯ — открывается из верхней панели
                ====================================================== -->
-          <section id="notificationsScreen" aria-labelledby="notificationsTitle" hidden>
-            <header><h2 id="notificationsTitle">Уведомления</h2></header>
-            <ul id="notificationsList">
+          <section class="screen" id="notificationsScreen" aria-labelledby="notificationsTitle" hidden>
+            <header class="screen__header"><h2 id="notificationsTitle">Уведомления</h2></header>
+            <ul class="notification-list" id="notificationsList">
               <li>Новых уведомлений пока нет.</li>
             </ul>
           </section>
@@ -290,7 +300,7 @@
       </div>
 
       <!-- ОБЩИЙ ПОДВАЛ. Не является самостоятельным экраном. -->
-      <footer id="appFooter"><p>Organizer — учебный проект.</p></footer>
+      <footer class="app-shell__footer" id="appFooter"><p>Organizer — учебный проект.</p></footer>
     </div>
     <!-- КОНЕЦ ОБЩЕЙ ОБОЛОЧКИ -->
 
@@ -302,85 +312,85 @@
          ============================================================ -->
 
     <!-- ОКНО A. Создание / редактирование задачи -->
-    <dialog id="taskDialog" aria-labelledby="taskDialogTitle" aria-describedby="taskDialogHelp">
-      <h2 id="taskDialogTitle">Задача</h2>
-      <p id="taskDialogHelp">Заполните сведения о задаче. Поля с пометкой «обязательно» необходимы для сохранения.</p>
-      <form id="taskForm">
+    <dialog class="dialog-panel" id="taskDialog" aria-labelledby="taskDialogTitle" aria-describedby="taskDialogHelp">
+      <h2 class="dialog-panel__title" id="taskDialogTitle">Задача</h2>
+      <p class="dialog-panel__help" id="taskDialogHelp">Заполните сведения о задаче. Поля с пометкой «обязательно» необходимы для сохранения.</p>
+      <form class="form-stack dialog-panel__form" id="taskForm">
         <input id="taskId" name="id" type="hidden" value="" />
-        <label for="taskTitle">Название задачи (обязательно)</label>
-        <input id="taskTitle" name="title" type="text" required />
+        <label class="form-field__label" for="taskTitle">Название задачи (обязательно)</label>
+        <input class="form-field__control" id="taskTitle" name="title" type="text" required />
 
-        <label for="taskDescription">Описание</label>
-        <textarea id="taskDescription" name="description" rows="4"></textarea>
+        <label class="form-field__label" for="taskDescription">Описание</label>
+        <textarea class="form-field__control" id="taskDescription" name="description" rows="4"></textarea>
 
         <!-- Состав статусов ещё требуется утвердить. -->
-        <label for="taskStatus">Статус</label>
-        <select id="taskStatus" name="status" required>
+        <label class="form-field__label" for="taskStatus">Статус</label>
+        <select class="form-field__control" id="taskStatus" name="status" required>
           <option value="planned">Запланирована</option>
           <option value="progress">В работе</option>
           <option value="done">Завершена</option>
         </select>
 
         <!-- Состав приоритетов ещё требуется утвердить. -->
-        <label for="taskPriority">Приоритет</label>
-        <select id="taskPriority" name="priority" required>
+        <label class="form-field__label" for="taskPriority">Приоритет</label>
+        <select class="form-field__control" id="taskPriority" name="priority" required>
           <option value="low">Низкий</option>
           <option value="medium">Средний</option>
           <option value="high">Высокий</option>
         </select>
 
-        <label for="taskDueDate">Срок выполнения</label>
-        <input id="taskDueDate" name="dueDate" type="date" />
+        <label class="form-field__label" for="taskDueDate">Срок выполнения</label>
+        <input class="form-field__control" id="taskDueDate" name="dueDate" type="date" />
 
         <!-- Допустимость задач без проекта требует решения. -->
-        <label for="taskProject">Проект</label>
-        <select id="taskProject" name="projectId">
+        <label class="form-field__label" for="taskProject">Проект</label>
+        <select class="form-field__control" id="taskProject" name="projectId">
           <option value="">Без проекта</option>
           <option value="organizer">Organizer</option>
         </select>
 
         <!-- Возможность оставить задачу без исполнителя требует решения. -->
-        <label for="taskAssignee">Исполнитель</label>
-        <select id="taskAssignee" name="assigneeId">
+        <label class="form-field__label" for="taskAssignee">Исполнитель</label>
+        <select class="form-field__control" id="taskAssignee" name="assigneeId">
           <option value="">Не назначен</option>
           <option value="ivan">Иван Петров</option>
         </select>
 
         <!-- Сохранение и закрытие подключим через JavaScript. -->
-        <button type="submit">Сохранить задачу</button>
-        <button type="button" data-close-dialog>Отмена</button>
+        <button class="button" type="submit">Сохранить задачу</button>
+        <button class="button button--secondary" type="button" data-close-dialog>Отмена</button>
       </form>
     </dialog>
     <!-- КОНЕЦ ОКНА A -->
 
     <!-- ОКНО B. Создание проекта -->
-    <dialog id="projectDialog" aria-labelledby="projectDialogTitle">
-      <h2 id="projectDialogTitle">Новый проект</h2>
-      <form id="projectForm">
-        <label for="projectName">Название проекта (обязательно)</label>
-        <input id="projectName" name="name" type="text" required />
-        <label for="projectDescription">Описание проекта</label>
-        <textarea id="projectDescription" name="description" rows="4"></textarea>
-        <button type="submit">Сохранить проект</button>
-        <button type="button" data-close-dialog>Отмена</button>
+    <dialog class="dialog-panel" id="projectDialog" aria-labelledby="projectDialogTitle">
+      <h2 class="dialog-panel__title" id="projectDialogTitle">Новый проект</h2>
+      <form class="form-stack dialog-panel__form" id="projectForm">
+        <label class="form-field__label" for="projectName">Название проекта (обязательно)</label>
+        <input class="form-field__control" id="projectName" name="name" type="text" required />
+        <label class="form-field__label" for="projectDescription">Описание проекта</label>
+        <textarea class="form-field__control" id="projectDescription" name="description" rows="4"></textarea>
+        <button class="button" type="submit">Сохранить проект</button>
+        <button class="button button--secondary" type="button" data-close-dialog>Отмена</button>
       </form>
     </dialog>
     <!-- КОНЕЦ ОКНА B -->
 
     <!-- ОКНО C. Приглашение участника -->
-    <dialog id="inviteDialog" aria-labelledby="inviteDialogTitle">
-      <h2 id="inviteDialogTitle">Пригласить участника</h2>
-      <form id="inviteForm">
-        <label for="inviteEmail">Электронная почта участника (обязательно)</label>
-        <input id="inviteEmail" name="email" type="email" required />
+    <dialog class="dialog-panel" id="inviteDialog" aria-labelledby="inviteDialogTitle">
+      <h2 class="dialog-panel__title" id="inviteDialogTitle">Пригласить участника</h2>
+      <form class="form-stack dialog-panel__form" id="inviteForm">
+        <label class="form-field__label" for="inviteEmail">Электронная почта участника (обязательно)</label>
+        <input class="form-field__control" id="inviteEmail" name="email" type="email" required />
         <!-- Полномочия ролей уточним перед реализацией сервера. -->
-        <label for="inviteRole">Роль</label>
-        <select id="inviteRole" name="role">
+        <label class="form-field__label" for="inviteRole">Роль</label>
+        <select class="form-field__control" id="inviteRole" name="role">
           <option value="member">Участник</option>
           <option value="admin">Администратор</option>
         </select>
-        <button type="submit">Отправить приглашение</button>
-        <button type="button" data-close-dialog>Отмена</button>
+        <button class="button" type="submit">Отправить приглашение</button>
+        <button class="button button--secondary" type="button" data-close-dialog>Отмена</button>
       </form>
     </dialog>
     <!-- КОНЕЦ ОКНА C -->
