@@ -109,29 +109,32 @@
             <form class="task-filters" id="taskFiltersForm" role="search" aria-label="Поиск и фильтрация задач">
               <div class="task-filters__field">
                 <label class="task-filters__label" for="taskSearch">Поиск задач</label>
-              <input class="task-filters__control" id="taskSearch" name="query" type="search" placeholder="Название задачи" />
+                <input class="task-filters__control" id="taskSearch" name="query" type="search" placeholder="Название задачи" />
               </div>
 
               <div class="task-filters__field">
                 <label class="task-filters__label" for="taskStatusFilter">Статус</label>
-              <select class="task-filters__control" id="taskStatusFilter" name="status">
+                <select class="task-filters__control" id="taskStatusFilter" name="status">
+                  <option value="">Все статусы</option>
+                  <option value="planned">Запланирована</option>
+                  <option value="progress">В работе</option>
+                  <option value="done">Завершена</option>
+                </select>
               </div>
-                <option value="">Все статусы</option>
-                <option value="planned">Запланирована</option>
-                <option value="progress">В работе</option>
-                <option value="done">Завершена</option>
-              </select>
 
               <div class="task-filters__field">
                 <label class="task-filters__label" for="taskPriorityFilter">Приоритет</label>
-              <select class="task-filters__control" id="taskPriorityFilter" name="priority">
+                <select class="task-filters__control" id="taskPriorityFilter" name="priority">
+                  <option value="">Любой приоритет</option>
+                  <option value="low">Низкий</option>
+                  <option value="medium">Средний</option>
+                  <option value="high">Высокий</option>
+                </select>
               </div>
-                <option value="">Любой приоритет</option>
-                <option value="low">Низкий</option>
-                <option value="medium">Средний</option>
-                <option value="high">Высокий</option>
-              </select>
-              <div class="task-filters__actions"><button class="button button--quiet" type="reset">Сбросить фильтры</button></div>
+
+              <div class="task-filters__actions">
+                <button class="button button--quiet" type="reset">Сбросить фильтры</button>
+              </div>
             </form>
 
             <!-- СПИСОК ЗАДАЧ. Каждая задача — отдельный article. -->
