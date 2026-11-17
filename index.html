@@ -2,16 +2,25 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Organizer</title>
   </head>
 
   <body>
     <header>
+      <h1>Organizer</h1>
+
       <nav>
         <div>
           <a href="">
             <!-- Логотип -->
-            <img src="" alt="" />
+            <img
+              src=""
+              alt=""
+            />
           </a>
         </div>
         <div>
@@ -41,20 +50,52 @@
           </header>
 
           <div>
-            <input type="search" placeholder="Поиск задач" />
+            <label for="taskSearch">Поиск задач</label>
+            <input
+              type="search"
+              id="taskSearch"
+              name="search"
+              placeholder="Поиск задач"
+            />
             <button type="button">Фильтр</button>
             <button type="button">Сортировка</button>
           </div>
 
           <div>
             <article>
-              <h3>Подготовить план проекта</h3>
+              <header>
+                <h3>Подготовить план проекта</h3>
+              </header>
+
               <p>Составить первоначальный план разработки приложения.</p>
+
+              <dl>
+                <dt>Статус</dt>
+                <dd>В работе</dd>
+
+                <dt>Приоритет</dt>
+                <dd>Высокий</dd>
+
+                <dt>Срок выполнения</dt>
+                <dd>25 ноября 2026</dd>
+
+                <dt>Исполнитель</dt>
+                <dd>Иван Петров</dd>
+
+                <dt>Проект</dt>
+                <dd>Organizer</dd>
+              </dl>
+
+              <footer>
+                <button type="button">Редактировать</button>
+                <button type="button">Удалить</button>
+              </footer>
             </article>
 
             <article>
               <h3>Создать HTML-разметку</h3>
               <p>Разработать структуру главной страницы.</p>
+              <p>Статус: Запланирована</p>
             </article>
           </div>
         </section>
