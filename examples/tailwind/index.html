@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Organizer — учебное веб-приложение для управления задачами и проектами." />
+    <title>Organizer — Tailwind CSS</title>
+    <!-- Учебный просмотр без сборки. Play CDN только для разработки. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --color-ink: #18283b;
+  --color-muted: #586b7d;
+  --color-accent: #176a77;
+  --color-accent-dark: #10525d;
+  --color-accent-soft: #e7f3f1;
+  --color-paper: #f5f7f8;
+  --color-line: #dce5eb;
+  --color-danger: #ad3947;
+  --color-danger-soft: #fff0f1;
+  --color-good: #206e53;
+  --color-good-soft: #edf8f2;
+}
+      @layer base {
+        [hidden] { display: none !important; }
+      }
+    </style>
+    <!-- После npm run build: удалить script и style выше, подключить:
+         <link rel="stylesheet" href="./output.css" /> -->
+  </head>
+  <body>
+    <!-- Ссылка для клавиатурной навигации, стиль добавим в CSS. -->
+    <a href="#appMain" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-3 focus:text-accent focus:shadow-lg">Перейти к основному содержимому</a>
+    <p class="mx-4 my-3 rounded-md border border-green-300 bg-good-soft px-4 py-3 text-good empty:hidden" id="appStatus" role="status" aria-live="polite"></p>
+    <p class="mx-4 my-3 rounded-md border border-red-300 bg-danger-soft px-4 py-3 text-danger" id="appError" role="alert" hidden></p>
+    <!-- ============================================================
+         ЧАСТЬ 1. ВХОД И РЕГИСТРАЦИЯ
+         Это экраны ДО входа пользователя в приложение.
+         Сейчас они скрыты. Позже JavaScript будет показывать нужный.
+         ============================================================ -->
+
+    <!-- ЭКРАН 1. Вход в учётную запись -->
+    <section class="mx-auto my-8 w-[calc(100%-2rem)] max-w-[30rem] rounded-xl border border-line bg-white p-6 shadow-lg" id="loginScreen" aria-labelledby="loginTitle" hidden>
+      <h1 class="mb-6 text-2xl font-bold tracking-tight text-ink" id="loginTitle">Вход в Organizer</h1>
+      <form class="grid gap-4" id="loginForm">
+        <label class="text-sm font-semibold text-ink" for="loginEmail">Электронная почта</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="loginEmail" name="email" type="email" autocomplete="email" required />
+
+        <label class="text-sm font-semibold text-ink" for="loginPassword">Пароль</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="loginPassword" name="password" type="password" autocomplete="current-password" required />
+
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="submit">Войти</button>
+        <!-- ПЕРЕХОД: открыть экран регистрации registerScreen -->
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="registerScreen">Зарегистрироваться</button>
+      </form>
+    </section>
+    <!-- КОНЕЦ ЭКРАНА 1 -->
+
+    <!-- ЭКРАН 2. Регистрация нового пользователя -->
+    <section class="mx-auto my-8 w-[calc(100%-2rem)] max-w-[30rem] rounded-xl border border-line bg-white p-6 shadow-lg" id="registerScreen" aria-labelledby="registerTitle" hidden>
+      <h1 class="mb-6 text-2xl font-bold tracking-tight text-ink" id="registerTitle">Регистрация</h1>
+      <form class="grid gap-4" id="registerForm">
+        <label class="text-sm font-semibold text-ink" for="registerName">Имя</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="registerName" name="name" type="text" autocomplete="name" required />
+
+        <label class="text-sm font-semibold text-ink" for="registerEmail">Электронная почта</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="registerEmail" name="email" type="email" autocomplete="email" required />
+
+        <label class="text-sm font-semibold text-ink" for="registerPassword">Пароль</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" required />
+
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="submit">Создать учётную запись</button>
+        <!-- ПЕРЕХОД: обратно на экран входа loginScreen -->
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="loginScreen">У меня уже есть учётная запись</button>
+      </form>
+    </section>
+    <!-- КОНЕЦ ЭКРАНА 2 -->
+
+    <!-- ============================================================
+         ЧАСТЬ 2. ОБЩАЯ ОБОЛОЧКА ПРИЛОЖЕНИЯ
+         Эта область сохраняется при переходах между экранами внутри SPA.
+         В учебном прототипе она показана сразу, без настоящего входа.
+         После реализации авторизации JavaScript будет её скрывать
+         от неавторизованных пользователей.
+         ============================================================ -->
+    <div class="flex min-h-screen flex-col" id="appShell">
+      <!-- ОБЩАЯ ВЕРХНЯЯ ПАНЕЛЬ. Это не отдельный экран. -->
+      <header class="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-white p-4 shadow-sm lg:px-8" id="appHeader">
+        <h1 class="m-0 text-[clamp(1.5rem,2.5vw,1.9rem)] font-extrabold tracking-tight text-accent">Organizer</h1>
+        <nav class="flex flex-wrap items-center gap-2" aria-label="Верхняя навигация">
+          <!-- ПЕРЕХОД: экран уведомлений notificationsScreen -->
+          <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="notificationsScreen">Уведомления</button>
+          <!-- ПЕРЕХОД: настройки пользователя settingsScreen -->
+          <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="settingsScreen">Мой профиль</button>
+          <!-- ДЕЙСТВИЕ: выход из учётной записи; реализуем позднее -->
+          <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-transparent bg-transparent px-4 py-2.5 text-center text-sm font-semibold text-muted hover:border-line hover:bg-paper focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent" type="button" id="logoutButton">Выйти</button>
+        </nav>
+      </header>
+
+      <!-- КОНТЕЙНЕР ДВУХ ОБЛАСТЕЙ: БОКОВОГО МЕНЮ И ОСНОВНОГО СОДЕРЖИМОГО -->
+      <div class="grid min-w-0 flex-1 grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]" id="appLayout">
+        <!-- ОБЩЕЕ БОКОВОЕ МЕНЮ. Это не отдельный экран. -->
+        <aside class="min-w-0 border-b border-line bg-white md:border-b-0 md:border-r" id="sidebar">
+          <nav class="flex gap-2 overflow-x-auto p-3 md:sticky md:top-4 md:flex-col md:overflow-visible" aria-label="Разделы Organizer">
+            <!-- Каждый data-screen-target содержит id нужного экрана.
+                 Позже JavaScript прочитает этот атрибут и выполнит переход. -->
+            <button class="min-h-11 shrink-0 rounded-md border border-transparent bg-transparent px-4 py-2.5 text-left text-sm font-semibold whitespace-nowrap text-muted hover:bg-accent-soft hover:text-accent focus-visible:outline-3 focus-visible:outline-accent md:w-full md:whitespace-normal aria-[current=page]:border-accent/30 aria-[current=page]:bg-accent-soft aria-[current=page]:text-accent" aria-current="page" type="button" data-screen-target="tasksScreen">Задачи</button>
+            <button class="min-h-11 shrink-0 rounded-md border border-transparent bg-transparent px-4 py-2.5 text-left text-sm font-semibold whitespace-nowrap text-muted hover:bg-accent-soft hover:text-accent focus-visible:outline-3 focus-visible:outline-accent md:w-full md:whitespace-normal aria-[current=page]:border-accent/30 aria-[current=page]:bg-accent-soft aria-[current=page]:text-accent" type="button" data-screen-target="projectsScreen">Проекты</button>
+            <button class="min-h-11 shrink-0 rounded-md border border-transparent bg-transparent px-4 py-2.5 text-left text-sm font-semibold whitespace-nowrap text-muted hover:bg-accent-soft hover:text-accent focus-visible:outline-3 focus-visible:outline-accent md:w-full md:whitespace-normal aria-[current=page]:border-accent/30 aria-[current=page]:bg-accent-soft aria-[current=page]:text-accent" type="button" data-screen-target="teamScreen">Команда</button>
+            <button class="min-h-11 shrink-0 rounded-md border border-transparent bg-transparent px-4 py-2.5 text-left text-sm font-semibold whitespace-nowrap text-muted hover:bg-accent-soft hover:text-accent focus-visible:outline-3 focus-visible:outline-accent md:w-full md:whitespace-normal aria-[current=page]:border-accent/30 aria-[current=page]:bg-accent-soft aria-[current=page]:text-accent" type="button" data-screen-target="calendarScreen">Календарь</button>
+            <button class="min-h-11 shrink-0 rounded-md border border-transparent bg-transparent px-4 py-2.5 text-left text-sm font-semibold whitespace-nowrap text-muted hover:bg-accent-soft hover:text-accent focus-visible:outline-3 focus-visible:outline-accent md:w-full md:whitespace-normal aria-[current=page]:border-accent/30 aria-[current=page]:bg-accent-soft aria-[current=page]:text-accent" type="button" data-screen-target="settingsScreen">Настройки</button>
+          </nav>
+        </aside>
+
+        <!-- ОСНОВНАЯ ОБЛАСТЬ. В ней расположены экраны приложения.
+             В каждый момент обычно виден один основной экран. -->
+        <main class="min-w-0 p-4 md:p-6 xl:p-10" id="appMain" tabindex="-1">
+          <!-- ======================================================
+               ЭКРАН 3. МОИ ЗАДАЧИ — стартовый экран после входа
+               Он единственный без hidden в этой группе.
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="tasksScreen" aria-labelledby="tasksTitle">
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight">
+              <h2 id="tasksTitle">Мои задачи</h2>
+              <!-- ОКНО: форма создания задачи taskDialog -->
+              <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-dialog-target="taskDialog">Добавить задачу</button>
+            </header>
+
+            <!-- ПАНЕЛЬ ПОИСКА И ФИЛЬТРАЦИИ. Это часть экрана задач. -->
+            <form class="mb-6 grid grid-cols-1 items-end gap-3 rounded-lg border border-line bg-white p-4 md:grid-cols-[minmax(12rem,2fr)_minmax(9rem,1fr)_minmax(9rem,1fr)] xl:grid-cols-[minmax(12rem,2fr)_minmax(9rem,1fr)_minmax(9rem,1fr)_auto]" id="taskFiltersForm" role="search" aria-label="Поиск и фильтрация задач">
+              <div class="grid min-w-0 gap-2">
+                <label class="text-sm font-semibold text-ink" for="taskSearch">Поиск задач</label>
+                <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskSearch" name="query" type="search" placeholder="Название задачи" />
+              </div>
+
+              <div class="grid min-w-0 gap-2">
+                <label class="text-sm font-semibold text-ink" for="taskStatusFilter">Статус</label>
+                <select class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskStatusFilter" name="status">
+                  <option value="">Все статусы</option>
+                  <option value="planned">Запланирована</option>
+                  <option value="progress">В работе</option>
+                  <option value="done">Завершена</option>
+                </select>
+              </div>
+
+              <div class="grid min-w-0 gap-2">
+                <label class="text-sm font-semibold text-ink" for="taskPriorityFilter">Приоритет</label>
+                <select class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskPriorityFilter" name="priority">
+                  <option value="">Любой приоритет</option>
+                  <option value="low">Низкий</option>
+                  <option value="medium">Средний</option>
+                  <option value="high">Высокий</option>
+                </select>
+              </div>
+
+              <div class="flex items-end md:col-span-full xl:col-auto">
+                <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-transparent bg-transparent px-4 py-2.5 text-center text-sm font-semibold text-muted hover:border-line hover:bg-paper focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent" type="reset">Сбросить фильтры</button>
+              </div>
+            </form>
+
+            <!-- СПИСОК ЗАДАЧ. Каждая задача — отдельный article. -->
+            <div class="grid grid-cols-1 gap-4" id="tasksList">
+              <!-- КАРТОЧКА ЗАДАЧИ 1 -->
+              <article class="min-w-0 rounded-lg border border-line border-l-4 border-l-accent bg-white p-4 shadow-sm sm:p-6" id="taskExample1" data-task-id="example-task-1" aria-labelledby="taskExample1Title">
+                <header class="mb-3">
+                  <h3 class="m-0 text-lg font-bold tracking-tight text-ink" id="taskExample1Title">Подготовить план проекта</h3>
+                </header>
+                <p class="mb-3 break-words text-muted">Составить первоначальный план разработки приложения.</p>
+                <dl class="my-4 grid grid-cols-1 gap-x-4 gap-y-2 text-sm sm:grid-cols-[minmax(6rem,auto)_minmax(0,1fr)] [&_dt]:text-muted [&_dd]:m-0 [&_dd]:min-w-0 [&_dd]:break-words [&_dd]:font-semibold">
+                  <dt>Статус</dt><dd>В работе</dd>
+                  <dt>Приоритет</dt><dd>Высокий</dd>
+                  <dt>Срок</dt><dd><time datetime="2026-11-25">25 ноября 2026</time></dd>
+                  <dt>Исполнитель</dt><dd>Иван Петров</dd>
+                  <dt>Проект</dt><dd>Organizer</dd>
+                </dl>
+                <footer class="flex flex-wrap gap-2 border-t border-line pt-3">
+                  <!-- ОКНО: тот же taskDialog, но в режиме редактирования -->
+                  <button class="inline-flex min-h-10 items-center justify-center rounded-md border border-accent/50 bg-white px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-accent" type="button" data-dialog-target="taskDialog" data-task-id="example-task-1" aria-label="Редактировать задачу «Подготовить план проекта»">Редактировать</button>
+                  <button class="inline-flex min-h-10 items-center justify-center rounded-md border border-danger/40 bg-white px-3 py-2 text-sm font-semibold text-danger hover:border-danger hover:bg-danger-soft focus-visible:outline-3 focus-visible:outline-danger" type="button" data-action="delete-task" data-task-id="example-task-1" aria-label="Удалить задачу «Подготовить план проекта»">Удалить</button>
+                </footer>
+              </article>
+              <!-- КОНЕЦ КАРТОЧКИ 1 -->
+
+              <!-- КАРТОЧКА ЗАДАЧИ 2 -->
+              <article class="min-w-0 rounded-lg border border-line border-l-4 border-l-accent bg-white p-4 shadow-sm sm:p-6" id="taskExample2" data-task-id="example-task-2" aria-labelledby="taskExample2Title">
+                <header class="mb-3"><h3 class="m-0 text-lg font-bold tracking-tight text-ink" id="taskExample2Title">Создать HTML-разметку</h3></header>
+                <p class="mb-3 break-words text-muted">Разработать структуру главной страницы.</p>
+                <dl class="my-4 grid grid-cols-1 gap-x-4 gap-y-2 text-sm sm:grid-cols-[minmax(6rem,auto)_minmax(0,1fr)] [&_dt]:text-muted [&_dd]:m-0 [&_dd]:min-w-0 [&_dd]:break-words [&_dd]:font-semibold">
+                  <dt>Статус</dt><dd>Запланирована</dd>
+                  <dt>Приоритет</dt><dd>Средний</dd>
+                  <dt>Срок</dt><dd><time datetime="2026-11-30">30 ноября 2026</time></dd>
+                  <dt>Исполнитель</dt><dd>Иван Петров</dd>
+                  <dt>Проект</dt><dd>Organizer</dd>
+                </dl>
+                <footer class="flex flex-wrap gap-2 border-t border-line pt-3">
+                  <button class="inline-flex min-h-10 items-center justify-center rounded-md border border-accent/50 bg-white px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-accent" type="button" data-dialog-target="taskDialog" data-task-id="example-task-2" aria-label="Редактировать задачу «Создать HTML-разметку»">Редактировать</button>
+                  <button class="inline-flex min-h-10 items-center justify-center rounded-md border border-danger/40 bg-white px-3 py-2 text-sm font-semibold text-danger hover:border-danger hover:bg-danger-soft focus-visible:outline-3 focus-visible:outline-danger" type="button" data-action="delete-task" data-task-id="example-task-2" aria-label="Удалить задачу «Создать HTML-разметку»">Удалить</button>
+                </footer>
+              </article>
+              <!-- КОНЕЦ КАРТОЧКИ 2 -->
+            </div>
+            <p class="rounded-lg border border-dashed border-line bg-white p-6 text-center text-muted" id="tasksEmptyState" hidden>Задач по выбранным условиям не найдено.</p>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 3 -->
+
+          <!-- ======================================================
+               ЭКРАН 4. ПРОЕКТЫ — список проектов
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="projectsScreen" aria-labelledby="projectsTitle" hidden>
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight">
+              <h2 id="projectsTitle">Проекты</h2>
+              <!-- ОКНО: форма создания проекта projectDialog -->
+              <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-dialog-target="projectDialog">Создать проект</button>
+            </header>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" id="projectsList" aria-label="Список проектов">
+              <article class="min-w-0 rounded-lg border border-line bg-white p-5 shadow-sm" id="projectExample1" data-project-id="example-project-1" aria-labelledby="projectExampleTitle">
+                <h3 class="m-0 text-lg font-bold" id="projectExampleTitle">Organizer</h3>
+                <p class="my-3 text-muted">Разработка менеджера задач и проектов.</p>
+                <!-- ПЕРЕХОД: подробный экран одного проекта projectDetailsScreen -->
+                <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="projectDetailsScreen" data-project-id="example-project-1" aria-label="Открыть проект Organizer">Открыть проект</button>
+              </article>
+            </div>
+            <p class="rounded-lg border border-dashed border-line bg-white p-6 text-center text-muted" id="projectsEmptyState" hidden>Проектов пока нет.</p>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 4 -->
+
+          <!-- ======================================================
+               ЭКРАН 5. ПОДРОБНОСТИ ПРОЕКТА — внутренний экран раздела
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="projectDetailsScreen" aria-labelledby="projectDetailsTitle" hidden>
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight">
+              <h2 id="projectDetailsTitle">Проект Organizer</h2>
+              <!-- ПЕРЕХОД: обратно к списку проектов -->
+              <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="projectsScreen">Ко всем проектам</button>
+            </header>
+            <p>Разработка приложения для управления задачами и командой.</p>
+            <h3>Участники проекта</h3>
+            <ul class="grid list-none gap-3 p-0 [&_li]:rounded-md [&_li]:border [&_li]:border-line [&_li]:bg-white [&_li]:p-3" id="projectMembersList"><li>Иван Петров</li></ul>
+            <h3>Задачи проекта</h3>
+            <ul class="grid list-none gap-3 p-0 [&_li]:rounded-md [&_li]:border [&_li]:border-line [&_li]:bg-white [&_li]:p-3" id="projectTasksList"><li>Подготовить план проекта</li><li>Создать HTML-разметку</li></ul>
+            <!-- Позже пункты задач станут ссылками на подробности задачи. -->
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 5 -->
+
+          <!-- ======================================================
+               ЭКРАН 6. КОМАНДА — участники и роли
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="teamScreen" aria-labelledby="teamTitle" hidden>
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight">
+              <h2 id="teamTitle">Команда</h2>
+              <!-- ОКНО: форма приглашения inviteDialog -->
+              <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-dialog-target="inviteDialog">Пригласить участника</button>
+            </header>
+            <ul class="grid list-none gap-3 p-0" id="teamList">
+              <li class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-white p-4 shadow-sm" data-user-id="example-user-1">
+                Иван Петров — участник команды
+                <!-- ПЕРЕХОД: профиль выбранного участника memberScreen -->
+                <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="memberScreen" data-user-id="example-user-1" aria-label="Профиль участника Иван Петров">Профиль</button>
+              </li>
+            </ul>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 6 -->
+
+          <!-- ======================================================
+               ЭКРАН 7. ПРОФИЛЬ УЧАСТНИКА — внутренний экран команды
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="memberScreen" aria-labelledby="memberTitle" hidden>
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight">
+              <h2 id="memberTitle">Участник команды: Иван Петров</h2>
+              <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-screen-target="teamScreen">К команде</button>
+            </header>
+            <dl class="my-4 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm [&_dt]:text-muted [&_dd]:m-0 [&_dd]:font-semibold">
+              <dt>Роль</dt><dd>Участник</dd>
+              <dt>Назначенные задачи</dt><dd>2</dd>
+            </dl>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 7 -->
+
+          <!-- ======================================================
+               ЭКРАН 8. КАЛЕНДАРЬ — задачи по датам
+               На данном этапе это семантическая заготовка, а не сетка календаря.
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="calendarScreen" aria-labelledby="calendarTitle" hidden>
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight"><h2 id="calendarTitle">Календарь задач</h2></header>
+            <label for="calendarDate">Выберите дату</label>
+            <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="calendarDate" type="date" name="calendarDate" />
+            <h3>Задачи выбранного дня</h3>
+            <ul class="grid list-none gap-3 p-0 [&_li]:rounded-md [&_li]:border [&_li]:border-line [&_li]:bg-white [&_li]:p-3" id="calendarTasks"><li>Здесь появятся задачи на выбранную дату.</li></ul>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 8 -->
+
+          <!-- ======================================================
+               ЭКРАН 9. НАСТРОЙКИ — параметры пользователя
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="settingsScreen" aria-labelledby="settingsTitle" hidden>
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight"><h2 id="settingsTitle">Настройки</h2></header>
+            <form class="grid max-w-[38rem] gap-4" id="profileForm">
+              <fieldset class="grid min-w-0 gap-4 rounded-lg border border-line p-4">
+                <legend class="px-2 font-bold">Профиль</legend>
+                <label class="text-sm font-semibold text-ink" for="profileName">Имя</label>
+                <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="profileName" name="name" type="text" autocomplete="name" required />
+                <label class="text-sm font-semibold text-ink" for="profileEmail">Электронная почта</label>
+                <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="profileEmail" name="email" type="email" autocomplete="email" required />
+              </fieldset>
+              <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="submit">Сохранить профиль</button>
+            </form>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 9 -->
+
+          <!-- ======================================================
+               ЭКРАН 10. УВЕДОМЛЕНИЯ — открывается из верхней панели
+               ====================================================== -->
+          <section class="mx-auto w-full max-w-[75rem] min-w-0" id="notificationsScreen" aria-labelledby="notificationsTitle" hidden>
+            <header class="mb-6 flex flex-wrap items-center justify-between gap-3 [&_h2]:m-0 [&_h2]:text-[clamp(1.45rem,2.2vw,1.9rem)] [&_h2]:font-bold [&_h2]:tracking-tight"><h2 id="notificationsTitle">Уведомления</h2></header>
+            <ul class="grid list-none gap-3 p-0 [&_li]:rounded-md [&_li]:border [&_li]:border-line [&_li]:bg-white [&_li]:p-3" id="notificationsList">
+              <li>Новых уведомлений пока нет.</li>
+            </ul>
+          </section>
+          <!-- КОНЕЦ ЭКРАНА 10 -->
+        </main>
+      </div>
+
+      <!-- ОБЩИЙ ПОДВАЛ. Не является самостоятельным экраном. -->
+      <footer class="border-t border-line bg-white px-4 py-4 text-center text-sm text-muted" id="appFooter"><p>Organizer — учебный проект.</p></footer>
+    </div>
+    <!-- КОНЕЦ ОБЩЕЙ ОБОЛОЧКИ -->
+
+    <!-- ============================================================
+         ЧАСТЬ 3. МОДАЛЬНЫЕ ОКНА
+         dialog — НЕ основной экран: он открывается поверх текущего.
+         По умолчанию все dialog закрыты. Позже JS вызовет showModal().
+         Кнопки закрытия тоже будут подключены через JS.
+         ============================================================ -->
+
+    <!-- ОКНО A. Создание / редактирование задачи -->
+    <dialog class="mx-auto max-h-[90dvh] w-[calc(100%-1rem)] max-w-[38rem] overflow-y-auto rounded-xl border border-line bg-white p-4 text-ink shadow-xl backdrop:bg-slate-950/60 sm:w-[calc(100%-2rem)] sm:p-6" id="taskDialog" aria-labelledby="taskDialogTitle" aria-describedby="taskDialogHelp">
+      <h2 class="mb-2 text-xl font-bold" id="taskDialogTitle">Задача</h2>
+      <p class="mb-4 text-sm text-muted" id="taskDialogHelp">Заполните сведения о задаче. Поля с пометкой «обязательно» необходимы для сохранения.</p>
+      <form class="grid gap-4" id="taskForm">
+        <input id="taskId" name="id" type="hidden" value="" />
+        <label class="text-sm font-semibold text-ink" for="taskTitle">Название задачи (обязательно)</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskTitle" name="title" type="text" required />
+
+        <label class="text-sm font-semibold text-ink" for="taskDescription">Описание</label>
+        <textarea class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskDescription" name="description" rows="4"></textarea>
+
+        <!-- Состав статусов ещё требуется утвердить. -->
+        <label class="text-sm font-semibold text-ink" for="taskStatus">Статус</label>
+        <select class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskStatus" name="status" required>
+          <option value="planned">Запланирована</option>
+          <option value="progress">В работе</option>
+          <option value="done">Завершена</option>
+        </select>
+
+        <!-- Состав приоритетов ещё требуется утвердить. -->
+        <label class="text-sm font-semibold text-ink" for="taskPriority">Приоритет</label>
+        <select class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskPriority" name="priority" required>
+          <option value="low">Низкий</option>
+          <option value="medium">Средний</option>
+          <option value="high">Высокий</option>
+        </select>
+
+        <label class="text-sm font-semibold text-ink" for="taskDueDate">Срок выполнения</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskDueDate" name="dueDate" type="date" />
+
+        <!-- Допустимость задач без проекта требует решения. -->
+        <label class="text-sm font-semibold text-ink" for="taskProject">Проект</label>
+        <select class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskProject" name="projectId">
+          <option value="">Без проекта</option>
+          <option value="organizer">Organizer</option>
+        </select>
+
+        <!-- Возможность оставить задачу без исполнителя требует решения. -->
+        <label class="text-sm font-semibold text-ink" for="taskAssignee">Исполнитель</label>
+        <select class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="taskAssignee" name="assigneeId">
+          <option value="">Не назначен</option>
+          <option value="ivan">Иван Петров</option>
+        </select>
+
+        <!-- Сохранение и закрытие подключим через JavaScript. -->
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="submit">Сохранить задачу</button>
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-close-dialog>Отмена</button>
+      </form>
+    </dialog>
+    <!-- КОНЕЦ ОКНА A -->
+
+    <!-- ОКНО B. Создание проекта -->
+    <dialog class="mx-auto max-h-[90dvh] w-[calc(100%-1rem)] max-w-[38rem] overflow-y-auto rounded-xl border border-line bg-white p-4 text-ink shadow-xl backdrop:bg-slate-950/60 sm:w-[calc(100%-2rem)] sm:p-6" id="projectDialog" aria-labelledby="projectDialogTitle">
+      <h2 class="mb-2 text-xl font-bold" id="projectDialogTitle">Новый проект</h2>
+      <form class="grid gap-4" id="projectForm">
+        <label class="text-sm font-semibold text-ink" for="projectName">Название проекта (обязательно)</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="projectName" name="name" type="text" required />
+        <label class="text-sm font-semibold text-ink" for="projectDescription">Описание проекта</label>
+        <textarea class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="projectDescription" name="description" rows="4"></textarea>
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="submit">Сохранить проект</button>
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-close-dialog>Отмена</button>
+      </form>
+    </dialog>
+    <!-- КОНЕЦ ОКНА B -->
+
+    <!-- ОКНО C. Приглашение участника -->
+    <dialog class="mx-auto max-h-[90dvh] w-[calc(100%-1rem)] max-w-[38rem] overflow-y-auto rounded-xl border border-line bg-white p-4 text-ink shadow-xl backdrop:bg-slate-950/60 sm:w-[calc(100%-2rem)] sm:p-6" id="inviteDialog" aria-labelledby="inviteDialogTitle">
+      <h2 class="mb-2 text-xl font-bold" id="inviteDialogTitle">Пригласить участника</h2>
+      <form class="grid gap-4" id="inviteForm">
+        <label class="text-sm font-semibold text-ink" for="inviteEmail">Электронная почта участника (обязательно)</label>
+        <input class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="inviteEmail" name="email" type="email" required />
+        <!-- Полномочия ролей уточним перед реализацией сервера. -->
+        <label class="text-sm font-semibold text-ink" for="inviteRole">Роль</label>
+        <select class="block min-h-11 w-full min-w-0 rounded-md border border-slate-400 bg-white px-3 py-2.5 text-ink placeholder:text-slate-500 focus:border-accent focus:outline-3 focus:outline-offset-1 focus:outline-accent/35 disabled:bg-paper aria-invalid:border-danger aria-invalid:bg-danger-soft" id="inviteRole" name="role">
+          <option value="member">Участник</option>
+          <option value="admin">Администратор</option>
+        </select>
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent bg-accent px-4 py-2.5 text-center text-sm font-semibold leading-snug text-white transition-colors hover:border-accent-dark hover:bg-accent-dark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="submit">Отправить приглашение</button>
+        <button class="inline-flex min-h-11 items-center justify-center rounded-md border border-accent/50 bg-white px-4 py-2.5 text-center text-sm font-semibold leading-snug text-accent transition-colors hover:border-accent hover:bg-accent-soft focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50" type="button" data-close-dialog>Отмена</button>
+      </form>
+    </dialog>
+    <!-- КОНЕЦ ОКНА C -->
+
+    <!--
+       КОНТРАКТ ДЛЯ СЛЕДУЮЩИХ ЭТАПОВ
+       CSS оформляет существующие семантические блоки и состояния фокуса.
+       JS использует id и data-* для переходов, форм и операций с задачами.
+       Демонстрационные карточки будут заменены реальными данными.
+       Сервер проверяет права и хранит данные, HTML этого не делает.
+       Роли, статусы и задачи без проекта ещё требуют утверждения.
+    -->
+  </body>
+</html>
