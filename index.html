@@ -3,9 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Organizer — учебное веб-приложение для управления задачами и проектами." />
     <title>Organizer — задачи и проекты</title>
   </head>
   <body>
+    <!-- Ссылка для клавиатурной навигации, стиль добавим в CSS. -->
+    <a href="#appMain" class="skip-link">Перейти к основному содержимому</a>
+    <p id="appStatus" role="status" aria-live="polite"></p>
+    <p id="appError" role="alert" hidden></p>
     <!-- ============================================================
          ЧАСТЬ 1. ВХОД И РЕГИСТРАЦИЯ
          Это экраны ДО входа пользователя в приложение.
@@ -40,7 +45,7 @@
         <input id="registerEmail" name="email" type="email" autocomplete="email" required />
 
         <label for="registerPassword">Пароль</label>
-        <input id="registerPassword" name="password" type="password" autocomplete="new-password" required />
+        <input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" required />
 
         <button type="submit">Создать учётную запись</button>
         <!-- ПЕРЕХОД: обратно на экран входа loginScreen -->
@@ -87,7 +92,7 @@
 
         <!-- ОСНОВНАЯ ОБЛАСТЬ. В ней расположены экраны приложения.
              В каждый момент обычно виден один основной экран. -->
-        <main id="appMain">
+        <main id="appMain" tabindex="-1">
           <!-- ======================================================
                ЭКРАН 3. МОИ ЗАДАЧИ — стартовый экран после входа
                Он единственный без hidden в этой группе.
@@ -100,9 +105,9 @@
             </header>
 
             <!-- ПАНЕЛЬ ПОИСКА И ФИЛЬТРАЦИИ. Это часть экрана задач. -->
-            <form id="taskFiltersForm" role="search">
+            <form id="taskFiltersForm" role="search" aria-label="Поиск и фильтрация задач">
               <label for="taskSearch">Поиск задач</label>
-              <input id="taskSearch" name="query" type="search" placeholder="Название или описание" />
+              <input id="taskSearch" name="query" type="search" placeholder="Название задачи" />
 
               <label for="taskStatusFilter">Статус</label>
               <select id="taskStatusFilter" name="status">
@@ -125,7 +130,7 @@
             <!-- СПИСОК ЗАДАЧ. Каждая задача — отдельный article. -->
             <div id="tasksList">
               <!-- КАРТОЧКА ЗАДАЧИ 1 -->
-              <article aria-labelledby="taskExample1Title">
+              <article id="taskExample1" data-task-id="example-task-1" aria-labelledby="taskExample1Title">
                 <header>
                   <h3 id="taskExample1Title">Подготовить план проекта</h3>
                 </header>
@@ -139,15 +144,14 @@
                 </dl>
                 <footer>
                   <!-- ОКНО: тот же taskDialog, но в режиме редактирования -->
-                  <button type="button" data-dialog-target="taskDialog">Редактировать</button>
-                  <!-- ДЕЙСТВИЕ: подтверждение и удаление позже через JavaScript -->
-                  <button type="button">Удалить</button>
+                  <button type="button" data-dialog-target="taskDialog" data-task-id="example-task-1" aria-label="Редактировать задачу «Подготовить план проекта»">Редактировать</button>
+                  <button type="button" data-action="delete-task" data-task-id="example-task-1" aria-label="Удалить задачу «Подготовить план проекта»">Удалить</button>
                 </footer>
               </article>
               <!-- КОНЕЦ КАРТОЧКИ 1 -->
 
               <!-- КАРТОЧКА ЗАДАЧИ 2 -->
-              <article aria-labelledby="taskExample2Title">
+              <article id="taskExample2" data-task-id="example-task-2" aria-labelledby="taskExample2Title">
                 <header><h3 id="taskExample2Title">Создать HTML-разметку</h3></header>
                 <p>Разработать структуру главной страницы.</p>
                 <dl>
@@ -158,12 +162,13 @@
                   <dt>Проект</dt><dd>Organizer</dd>
                 </dl>
                 <footer>
-                  <button type="button" data-dialog-target="taskDialog">Редактировать</button>
-                  <button type="button">Удалить</button>
+                  <button type="button" data-dialog-target="taskDialog" data-task-id="example-task-2" aria-label="Редактировать задачу «Создать HTML-разметку»">Редактировать</button>
+                  <button type="button" data-action="delete-task" data-task-id="example-task-2" aria-label="Удалить задачу «Создать HTML-разметку»">Удалить</button>
                 </footer>
               </article>
               <!-- КОНЕЦ КАРТОЧКИ 2 -->
             </div>
+            <p id="tasksEmptyState" hidden>Задач по выбранным условиям не найдено.</p>
           </section>
           <!-- КОНЕЦ ЭКРАНА 3 -->
 
@@ -176,14 +181,15 @@
               <!-- ОКНО: форма создания проекта projectDialog -->
               <button type="button" data-dialog-target="projectDialog">Создать проект</button>
             </header>
-            <div id="projectsList">
-              <article>
-                <h3>Organizer</h3>
+            <div id="projectsList" aria-label="Список проектов">
+              <article id="projectExample1" data-project-id="example-project-1" aria-labelledby="projectExampleTitle">
+                <h3 id="projectExampleTitle">Organizer</h3>
                 <p>Разработка менеджера задач и проектов.</p>
                 <!-- ПЕРЕХОД: подробный экран одного проекта projectDetailsScreen -->
-                <button type="button" data-screen-target="projectDetailsScreen">Открыть проект</button>
+                <button type="button" data-screen-target="projectDetailsScreen" data-project-id="example-project-1" aria-label="Открыть проект Organizer">Открыть проект</button>
               </article>
             </div>
+            <p id="projectsEmptyState" hidden>Проектов пока нет.</p>
           </section>
           <!-- КОНЕЦ ЭКРАНА 4 -->
 
@@ -198,9 +204,9 @@
             </header>
             <p>Разработка приложения для управления задачами и командой.</p>
             <h3>Участники проекта</h3>
-            <ul><li>Иван Петров</li></ul>
+            <ul id="projectMembersList"><li>Иван Петров</li></ul>
             <h3>Задачи проекта</h3>
-            <ul><li>Подготовить план проекта</li><li>Создать HTML-разметку</li></ul>
+            <ul id="projectTasksList"><li>Подготовить план проекта</li><li>Создать HTML-разметку</li></ul>
             <!-- Позже пункты задач станут ссылками на подробности задачи. -->
           </section>
           <!-- КОНЕЦ ЭКРАНА 5 -->
@@ -215,10 +221,10 @@
               <button type="button" data-dialog-target="inviteDialog">Пригласить участника</button>
             </header>
             <ul id="teamList">
-              <li>
+              <li data-user-id="example-user-1">
                 Иван Петров — участник команды
                 <!-- ПЕРЕХОД: профиль выбранного участника memberScreen -->
-                <button type="button" data-screen-target="memberScreen">Профиль</button>
+                <button type="button" data-screen-target="memberScreen" data-user-id="example-user-1" aria-label="Профиль участника Иван Петров">Профиль</button>
               </li>
             </ul>
           </section>
@@ -296,15 +302,18 @@
          ============================================================ -->
 
     <!-- ОКНО A. Создание / редактирование задачи -->
-    <dialog id="taskDialog" aria-labelledby="taskDialogTitle">
+    <dialog id="taskDialog" aria-labelledby="taskDialogTitle" aria-describedby="taskDialogHelp">
       <h2 id="taskDialogTitle">Задача</h2>
+      <p id="taskDialogHelp">Заполните сведения о задаче. Поля с пометкой «обязательно» необходимы для сохранения.</p>
       <form id="taskForm">
-        <label for="taskTitle">Название задачи</label>
+        <input id="taskId" name="id" type="hidden" value="" />
+        <label for="taskTitle">Название задачи (обязательно)</label>
         <input id="taskTitle" name="title" type="text" required />
 
         <label for="taskDescription">Описание</label>
         <textarea id="taskDescription" name="description" rows="4"></textarea>
 
+        <!-- Состав статусов ещё требуется утвердить. -->
         <label for="taskStatus">Статус</label>
         <select id="taskStatus" name="status" required>
           <option value="planned">Запланирована</option>
@@ -312,6 +321,7 @@
           <option value="done">Завершена</option>
         </select>
 
+        <!-- Состав приоритетов ещё требуется утвердить. -->
         <label for="taskPriority">Приоритет</label>
         <select id="taskPriority" name="priority" required>
           <option value="low">Низкий</option>
@@ -322,12 +332,14 @@
         <label for="taskDueDate">Срок выполнения</label>
         <input id="taskDueDate" name="dueDate" type="date" />
 
+        <!-- Допустимость задач без проекта требует решения. -->
         <label for="taskProject">Проект</label>
         <select id="taskProject" name="projectId">
           <option value="">Без проекта</option>
           <option value="organizer">Organizer</option>
         </select>
 
+        <!-- Возможность оставить задачу без исполнителя требует решения. -->
         <label for="taskAssignee">Исполнитель</label>
         <select id="taskAssignee" name="assigneeId">
           <option value="">Не назначен</option>
@@ -345,7 +357,7 @@
     <dialog id="projectDialog" aria-labelledby="projectDialogTitle">
       <h2 id="projectDialogTitle">Новый проект</h2>
       <form id="projectForm">
-        <label for="projectName">Название проекта</label>
+        <label for="projectName">Название проекта (обязательно)</label>
         <input id="projectName" name="name" type="text" required />
         <label for="projectDescription">Описание проекта</label>
         <textarea id="projectDescription" name="description" rows="4"></textarea>
@@ -359,8 +371,9 @@
     <dialog id="inviteDialog" aria-labelledby="inviteDialogTitle">
       <h2 id="inviteDialogTitle">Пригласить участника</h2>
       <form id="inviteForm">
-        <label for="inviteEmail">Электронная почта участника</label>
+        <label for="inviteEmail">Электронная почта участника (обязательно)</label>
         <input id="inviteEmail" name="email" type="email" required />
+        <!-- Полномочия ролей уточним перед реализацией сервера. -->
         <label for="inviteRole">Роль</label>
         <select id="inviteRole" name="role">
           <option value="member">Участник</option>
@@ -372,7 +385,13 @@
     </dialog>
     <!-- КОНЕЦ ОКНА C -->
 
-    <!-- JavaScript подключим после изучения HTML и CSS.
-         Он будет переключать экраны, открывать диалоги и сохранять данные. -->
+    <!--
+       КОНТРАКТ ДЛЯ СЛЕДУЮЩИХ ЭТАПОВ
+       CSS оформляет существующие семантические блоки и состояния фокуса.
+       JS использует id и data-* для переходов, форм и операций с задачами.
+       Демонстрационные карточки будут заменены реальными данными.
+       Сервер проверяет права и хранит данные, HTML этого не делает.
+       Роли, статусы и задачи без проекта ещё требуют утверждения.
+    -->
   </body>
 </html>
