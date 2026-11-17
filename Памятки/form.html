@@ -11,6 +11,7 @@
   <body>
     <form action="">
       <label for="taskTitle">Название задачи</label>
+
       <input
         type="text"
         name="title"
@@ -18,12 +19,24 @@
         required
       />
       <button type="submit">Coхранить</button>
+
       <textarea
         name="description"
         id="taskDescription"
         rows="4"
       ></textarea>
+
+      <label for="taskPriority"></label>
+      <select
+        name="priority"
+        id="taskPriority"
+      >
+        <option value="low">Низкий</option>
+        <option value="medium">Средний</option>
+        <option value="high">Высокий</option>
+      </select>
     </form>
+
     <!-- <button type="submit" form="taskForm">Сохранить</button> -->
   </body>
 </html>
