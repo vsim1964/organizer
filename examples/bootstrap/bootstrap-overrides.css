@@ -1,0 +1,75 @@
+/*
+  Organizer / Bootstrap: только настройка темы и оболочки.
+  Большинство компонентов оформлено стандартными классами Bootstrap.
+  Bootstrap 5.3.8 подключён в index.html с CDN и SRI.
+*/
+:root {
+  --bs-body-bg: #f5f7f8;
+  --bs-body-color: #18283b;
+  --bs-primary-rgb: 23, 106, 119;
+  --bs-secondary-color: #586b7d;
+  --bs-border-color: #dce5eb;
+  --bs-border-radius: 0.625rem;
+  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --bs-link-color-rgb: 23, 106, 119;
+  --bs-link-hover-color-rgb: 16, 82, 93;
+}
+body { background: var(--bs-body-bg); }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #166b87; outline-offset: 3px; }
+.navbar-brand { color: #176a77; letter-spacing: -0.04em; }
+.bootstrap-auth { max-width: 30rem; }
+.bootstrap-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+}
+.bootstrap-main { min-width: 0; }
+.bootstrap-sidebar { min-width: 0; }
+.bootstrap-nav { flex-direction: row; overflow-x: auto; }
+.bootstrap-nav .nav-link { flex-shrink: 0; color: #586b7d; }
+.bootstrap-nav .nav-link.active { background: #176a77; color: white; }
+.bootstrap-nav .nav-link:hover:not(.active) { background: #e7f3f1; color: #176a77; }
+.bootstrap-task-card { border-left-color: #176a77 !important; }
+.bootstrap-task-meta {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr);
+  gap: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+.bootstrap-task-meta dt { color: #586b7d; font-weight: 400; }
+.bootstrap-task-meta dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.bootstrap-settings-form { max-width: 38rem; }
+.btn-primary {
+  --bs-btn-bg: #176a77;
+  --bs-btn-border-color: #176a77;
+  --bs-btn-hover-bg: #10525d;
+  --bs-btn-hover-border-color: #10525d;
+  --bs-btn-active-bg: #10525d;
+  --bs-btn-active-border-color: #10525d;
+}
+.btn-outline-primary {
+  --bs-btn-color: #176a77;
+  --bs-btn-border-color: #91b8bd;
+  --bs-btn-hover-color: white;
+  --bs-btn-hover-bg: #176a77;
+  --bs-btn-hover-border-color: #176a77;
+  --bs-btn-active-bg: #176a77;
+  --bs-btn-active-border-color: #176a77;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #176a77;
+  box-shadow: 0 0 0 0.2rem rgb(23 106 119 / 16%);
+}
+@media (min-width: 768px) {
+  .bootstrap-shell { grid-template-columns: 15rem minmax(0, 1fr); }
+  .bootstrap-nav { flex-direction: column; overflow: visible; }
+  .bootstrap-nav .nav-link { white-space: normal !important; }
+}
+@media (max-width: 479px) {
+  .bootstrap-task-meta { grid-template-columns: 1fr; gap: 0; }
+  .bootstrap-task-meta dd { margin-bottom: 0.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
