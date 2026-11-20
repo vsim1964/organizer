@@ -12,11 +12,17 @@ if (statusElement !== null) {
 
 console.log("Organizer: урок 1 — DOM доступен.");
 
-// Урок 2. Переключение основных экранов без перезагрузки страницы.
+// Уроки 2–3. Переключение экранов и состояние навигации.
 const mainArea = document.querySelector("#appMain");
 const screens = document.querySelectorAll("#appMain .screen");
+const sidebarButtons = document.querySelectorAll(".sidebar__nav [data-screen-target]");
 
-function showScreen(screenId) {
+const parentScreens = {
+  projectDetailsScreen: "projectsScreen",
+  memberScreen: "teamScreen"
+};
+
+function showScreen(screenId, moveFocus = true) {
   const targetScreen = document.getElementById(screenId);
 
   if (mainArea === null || targetScreen === null ||
@@ -28,6 +34,20 @@ function showScreen(screenId) {
   screens.forEach((screen) => {
     screen.hidden = screen !== targetScreen;
   });
+
+  const activeSection = parentScreens[screenId] ?? screenId;
+
+  sidebarButtons.forEach((button) => {
+    if (button.dataset.screenTarget === activeSection) {
+      button.setAttribute("aria-current", "page");
+    } else {
+      button.removeAttribute("aria-current");
+    }
+  });
+
+  if (moveFocus) {
+    mainArea.focus();
+  }
 }
 
 navigationButtons.forEach((button) => {
@@ -35,3 +55,5 @@ navigationButtons.forEach((button) => {
     showScreen(button.dataset.screenTarget);
   });
 });
+
+showScreen("tasksScreen", false);
