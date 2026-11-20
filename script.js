@@ -57,3 +57,37 @@ navigationButtons.forEach((button) => {
 });
 
 showScreen("tasksScreen", false);
+
+// Урок 4. Открытие и закрытие диалоговых окон.
+const dialogButtons = document.querySelectorAll("[data-dialog-target]");
+const closeDialogButtons = document.querySelectorAll("dialog [data-close-dialog]");
+const dialogForms = document.querySelectorAll("dialog form");
+
+dialogButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const dialog = document.getElementById(button.dataset.dialogTarget);
+
+    if (dialog instanceof HTMLDialogElement && !dialog.open) {
+      dialog.showModal();
+    } else if (dialog === null || !(dialog instanceof HTMLDialogElement)) {
+      console.warn("Неизвестное диалоговое окно:", button.dataset.dialogTarget);
+    }
+  });
+});
+
+closeDialogButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const dialog = button.closest("dialog");
+
+    if (dialog !== null && dialog.open) {
+      dialog.close();
+    }
+  });
+});
+
+dialogForms.forEach((form) => {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    console.info("Сохранение данных будет добавлено на следующих этапах.");
+  });
+});
